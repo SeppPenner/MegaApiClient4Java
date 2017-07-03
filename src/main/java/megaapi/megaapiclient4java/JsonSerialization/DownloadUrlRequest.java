@@ -5,8 +5,8 @@ import megaapi.megaapiclient4java.Interfaces.INode;
 
 public class DownloadUrlRequest extends RequestBase {
 
-    public DownloadUrlRequest(INode node) 
-        : base("g"){
+    public DownloadUrlRequest(INode node){ 
+        super("g");
         this.id = node.getId();
 
         PublicNode publicNode = (PublicNode) node;
@@ -20,7 +20,7 @@ public class DownloadUrlRequest extends RequestBase {
     }
 
     @JsonProperty("n")
-    private String id;
+    private final String id;
 
     public String getId() {
         return id;

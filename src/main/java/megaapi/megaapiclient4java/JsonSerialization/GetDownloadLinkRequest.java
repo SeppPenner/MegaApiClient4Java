@@ -5,15 +5,13 @@ import megaapi.megaapiclient4java.Interfaces.INode;
 public class GetDownloadLinkRequest extends RequestBase {
 
     public GetDownloadLinkRequest(INode node) 
-        : base("l"){
+        {
+            super("l");
       this.id = node.getId();
     }
 
-    [
-
-    JsonProperty(
-    "n")]
-    private String id;
+    @JsonProperty("n")
+    private final String id;
 
     public String getId() {
         return id;

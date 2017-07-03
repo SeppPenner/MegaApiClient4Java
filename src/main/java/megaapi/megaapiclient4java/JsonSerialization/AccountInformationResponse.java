@@ -31,14 +31,12 @@ public class AccountInformationResponse implements IAccountInformation {
 
     private Iterable<IStorageMetrics> metrics;
 
+    @Override
     public Iterable<IStorageMetrics> getMetrics() {
         return metrics;
     }
 
-    [
-    OnDeserialized
-
-    ]
+    @OnDeserialized
     public void OnDeserialized(StreamingContext context) {
         this.Metrics = this.MetricsSerialized.Select(x =  > (IStorageMetrics) new StorageMetrics(x.Key, x.Value));
     }

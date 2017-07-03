@@ -3,7 +3,7 @@ package megaapi.megaapiclient4java.JsonSerialization;
 public class Attributes {
 
     private final int CrcArrayLength = 4;
-    private final int CrcSize = sizeof(long) * CrcArrayLength;
+    private final int CrcSize = sizeof(long.class) * CrcArrayLength;
     private final int FingerprintMaxSize = CrcSize + 1 + sizeof(long);
     private final int MAXFULL = 8192;
     private final long CryptoPPCRC32Polynomial = 0xEDB88320;
@@ -33,25 +33,18 @@ public class Attributes {
             Buffer.BlockCopy(crc, 0, fingerprintBuffer, 0, CrcSize);
 
             byte[] serializedModificationDate = modificationDate.Value.ToEpoch().SerializeToBytes();
-            Buffer.BlockCopy(serializedModificationDate, 0, fingerprintBuffer, CrcSize, serializedModificationDate.Length);
+            Buffer.BlockCopy(serializedModificationDate, 0, fingerprintBuffer, CrcSize, serializedModificationDate.length);
 
-            Array.Resize(ref fingerprintBuffer, fingerprintBuffer.Length - (sizeof(long) + 1) + serializedModificationDate.Length
+            Array.Resize(ref fingerprintBuffer, fingerprintBuffer.Length - (sizeof(long) + 1) + serializedModificationDate.length
             );
 
         this.SerializedFingerprint = Convert.ToBase64String(fingerprintBuffer);
         }
     }
 
-    [
+    @JsonProperty("n")
+    public String Name;
 
-    JsonProperty(
-    "n")]
-    public String Name
-
-    {get;set;
-    }
-
-    [
 
     JsonProperty(
     "c", DefaultValueHandling = DefaultValueHandling.Ignore)]

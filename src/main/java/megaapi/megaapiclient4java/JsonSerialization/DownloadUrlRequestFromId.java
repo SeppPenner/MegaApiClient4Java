@@ -2,8 +2,8 @@ package megaapi.megaapiclient4java.JsonSerialization;
 
 public class DownloadUrlRequestFromId extends RequestBase {
 
-    public DownloadUrlRequestFromId(String id) 
-        : base("g"){
+    public DownloadUrlRequestFromId(String id){
+        super("g");
       this.id = id;
     }
 
@@ -12,7 +12,7 @@ public class DownloadUrlRequestFromId extends RequestBase {
     }
 
     @JsonProperty("p")
-    private String id;
+    private final String id;
 
     public String getId() {
         return id;

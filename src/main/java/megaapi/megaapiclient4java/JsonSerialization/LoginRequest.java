@@ -1,23 +1,22 @@
 package megaapi.megaapiclient4java.JsonSerialization;
 
-public class LoginRequest implements RequestBase {
+public class LoginRequest extends RequestBase {
 
-    public LoginRequest(string userHandle, String passwordHash) 
-        : base("us")
-    {
+    public LoginRequest(String userHandle, String passwordHash){
+        super("us");
       this.userHandle = userHandle;
         this.passwordHash = passwordHash;
     }
 
     @JsonProperty("user")
-    private String userHandle;
+    private final String userHandle;
 
     public String getUserHandle() {
         return userHandle;
     }
 
     @JsonProperty("uh")
-    private String passwordHash;
+    private final String passwordHash;
 
     public String getPasswordHash() {
         return passwordHash;

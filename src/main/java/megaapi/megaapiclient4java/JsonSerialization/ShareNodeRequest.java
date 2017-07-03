@@ -1,19 +1,15 @@
 package megaapi.megaapiclient4java.JsonSerialization;
 
+import megaapi.megaapiclient4java.Cryptography.Crypto;
 import megaapi.megaapiclient4java.Interfaces.INode;
 import megaapi.megaapiclient4java.Interfaces.INodeCrypto;
 
 public class ShareNodeRequest extends RequestBase {
 
-    public ShareNodeRequest(INode node, byte[] masterKey, Iterable<INode> nodes) 
-        : base("s2"){
-        this.id = node.Id;
-        this.options = new object[]{new 
-        {
-            r = 0
-            , u = "EXP" }
-    }
-    ;
+    public ShareNodeRequest(INode node, byte[] masterKey, Iterable<INode> nodes) {
+        super("s2");
+        this.id = node.getId();
+        this.options = new Object[]{0, "EXP" };
 
         INodeCrypto nodeCrypto = (INodeCrypto) node;
     byte[] uncryptedSharedKey = nodeCrypto.getSharedKey();
@@ -25,9 +21,9 @@ public class ShareNodeRequest extends RequestBase {
     }
 
      
-    this.SharedKey  = Crypto.EncryptKey(uncryptedSharedKey, masterKey).ToBase64();
+    this.sharedKey  = Crypto.EncryptKey(uncryptedSharedKey, masterKey).ToBase64();
 
-    if (nodeCrypto.SharedKey
+    if (nodeCrypto.getSharedKey()
 
     
         == null){
@@ -36,7 +32,7 @@ public class ShareNodeRequest extends RequestBase {
         this.share.AddItem(node.getId(), nodeCrypto.getFullKey(), uncryptedSharedKey);
 
         // Add all children
-        Iterable<INode> allChildren = this.GetRecursiveChildren(nodes.ToArray(), node);
+        Iterable<INode> allChildren = this.GetRecursiveChildren(nodes.toArray(), node);
         for (INode child : allChildren) {
             this.share.AddItem(child.getId(), ((INodeCrypto) child).getFullKey(), uncryptedSharedKey);
         }
@@ -45,11 +41,10 @@ public class ShareNodeRequest extends RequestBase {
     byte[] handle = (node.getId() + node.getId()).ToBytes();
      
     this.handleAuth  = Crypto.EncryptKey(handle, masterKey).ToBase64();
-}
 
 private Iterable<INode> GetRecursiveChildren(INode[] nodes, INode parent){
         for (var node in nodes.Where(x => x.Type == NodeType.Directory || x.Type == NodeType.File)){
-            string parentId = node.Id;
+            String parentId = node.getId();
             do
             {
                 parentId = nodes.FirstOrDefault(x => x.Id == parentId)?.ParentId;
@@ -63,7 +58,7 @@ private Iterable<INode> GetRecursiveChildren(INode[] nodes, INode parent){
     }
 
     @JsonProperty("n")
-        private String id;
+        private final String id;
 
     public String getId(){
         return id;
@@ -77,14 +72,14 @@ private Iterable<INode> GetRecursiveChildren(INode[] nodes, INode parent){
     }
 
     @JsonProperty("s")
-        private object[] options;
+        private final Object[] options;
 
-    public object[] getOptions(){
+    public Object[] getOptions(){
         return options;
     }
     
     @JsonProperty("cr")
-        private ShareData share;
+        private final ShareData share;
 
     public ShareData getShare(){
         return share;

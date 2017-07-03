@@ -18,6 +18,6 @@ public class SharedKey {
     private final String key;
 
     public String getKey() {
-        return id;
+        return key;
     }
 }

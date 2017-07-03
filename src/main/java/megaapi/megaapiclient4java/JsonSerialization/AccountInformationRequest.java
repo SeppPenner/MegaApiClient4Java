@@ -2,9 +2,8 @@ package megaapi.megaapiclient4java.JsonSerialization;
 
 public class AccountInformationRequest extends RequestBase {
 
-    public AccountInformationRequest() 
-    
-    : base("uq"){
+    public AccountInformationRequest() {
+        super("uq");
     }
 
     @JsonProperty("strg")

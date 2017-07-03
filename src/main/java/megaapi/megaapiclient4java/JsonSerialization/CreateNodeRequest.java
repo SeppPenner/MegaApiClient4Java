@@ -7,9 +7,8 @@ import megaapi.megaapiclient4java.Interfaces.INodeCrypto;
 public class CreateNodeRequest extends RequestBase {
 
     private CreateNodeRequest(INode parentNode, NodeType type, String attributes,
-            String encryptedKey, byte[] key, String completionHandle) 
-        : base("p"){
-        
+            String encryptedKey, byte[] key, String completionHandle){
+        super("p");
         this.parentId = parentNode.getId();
         this.nodes = new []{
             new CreateNodeRequestData

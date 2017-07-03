@@ -25,10 +25,7 @@ public class GetNodesResponse {
         return sharedKeys;
     }
 
-    [
-    OnDeserialized
-
-    ]
+    @OnDeserialized
     public void OnDeserialized(StreamingContext ctx) {
         JsonSerializerSettings settings = new JsonSerializerSettings();
 

@@ -4,13 +4,13 @@ import megaapi.megaapiclient4java.Interfaces.INode;
 
 public class DeleteRequest extends RequestBase {
 
-    public DeleteRequest(INode node) 
-        : base("d"){
+    public DeleteRequest(INode node) {
+        super("d");
         this.node = node.getId();
     }
 
     @JsonProperty("n")
-    private String node;
+    private final String node;
 
     public String getNode() {
         return node;
