@@ -1,14 +1,16 @@
-package MegaApiClient4Java;
+package megaapi.megaapiclient4java;
 
-import MegaApiClient4Java.Interfaces.INode;
-import MegaApiClient4Java.Interfaces.INodeCrypto;
-import MegaApiClient4Java.Interfaces.INodeInfo;
 import java.util.Date;
+import megaapi.MegaApiClient4Java.Node;
+import megaapi.megaapiclient4java.Enumerations.NodeType;
+import megaapi.megaapiclient4java.Interfaces.INode;
+import megaapi.megaapiclient4java.Interfaces.INodeCrypto;
+import megaapi.megaapiclient4java.Interfaces.INodeInfo;
 
 public class PublicNode implements INode, INodeCrypto {
 
-    private Node node;
-    private String shareId;
+    private final Node node;
+    private final String shareId;
 
     private PublicNode(Node node, String shareId) {
         this.node = node;
@@ -34,51 +36,62 @@ public class PublicNode implements INode, INodeCrypto {
         return this.node.getName();
     }
 
-    public Date getModificationDate
-
-    {
-        return this.node.getModificationDate();
+    public Date getModificationDate{
+        return node.getModificationDate();
     }
 
+    @Override
     public String getId() {
         return this.node.getId();
     }
 
+    @Override
     public String getParentId() {
         return this.node.getParentId();
     }
 
+    @Override
     public String getOwner() {
         return this.node.getOwner();
     }
 
+    @Override
     public NodeType getType() {
         return this.node.getType();
     }
 
-    public Date getCreationDate
-
-    {
+    @Override
+    public Date getCreationDate(){
         return this.node.getCreationDate();
     }
 
+    @Override
     public byte[] getKey() {
-        return this.node.getKey();
+        return node.getKey();
     }
 
+    @Override
     public byte[] getSharedKey() {
-        return this.node.getSharedKey();
+        return node.getSharedKey();
     }
 
+    @Override
     public byte[] getIv() {
-        return this.node.getIv();
+        return node.getIv();
     }
 
+    @Override
     public byte[] getMetaMac() {
-        return this.node.getMetaMac();
+        return node.getMetaMac();
     }
 
+    @Override
     public byte[] getFullKey() {
-        return this.node.getFullKey();
+        return node.getFullKey();
+    }
+
+    @Override
+    public Date getModificationDate() {
+        throw node.getModificationDate();
     }
 }
