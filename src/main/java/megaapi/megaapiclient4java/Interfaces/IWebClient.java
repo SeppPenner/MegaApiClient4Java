@@ -15,11 +15,11 @@ public abstract class IWebClient {
         this.bufferSize = bufferSize;
     }
 
-    public abstract String PostRequestJson(URI url, String jsonData);
+    public abstract String postRequestJson(URI url, String jsonData);
 
-    public abstract String PostRequestRaw(URI url, Stream dataStream);
+    public abstract String postRequestRaw(URI url, Stream dataStream);
 
-    public abstract Stream GetRequestRaw(URI url);
+    public abstract Stream getRequestRaw(URI url);
 
     @Override
     public String toString() {
