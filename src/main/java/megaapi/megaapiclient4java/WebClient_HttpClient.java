@@ -1,22 +1,16 @@
-﻿namespace CG.Web.MegaApiClient
-{
-  using System;
-  using System.IO;
-  using System.Reflection;
-  using System.Text;
-  using System.Threading;
+package megaapi.megaapiclient4java;
 
-  using System.Net.Http;
-  using 
 
-System.Net.Http.Headers;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.util.stream.Stream;
+import megaapi.megaapiclient4java.Interfaces.IWebClient;
 
-  public class WebClient 
-: IWebClient
+  public class WebClient implements IWebClient
   {
-    private const int DefaultResponseTimeout = Timeout.Infinite;
+    private final int DefaultResponseTimeout = Timeout.Infinite;
 
-    private readonly HttpClient httpClient = new HttpClient();
+    private final HttpClient httpClient = new HttpClient();
 
     public WebClient(int responseTimeout = DefaultResponseTimeout, ProductInfoHeaderValue userAgent = null)
     {
@@ -27,25 +21,25 @@ System.Net.Http.Headers;
 
     public int BufferSize { get; set; }
 
-    public string PostRequestJson(Uri url, string jsonData)
+    public String PostRequestJson(URI url, String jsonData)
     {
-      using (MemoryStream jsonStream = new MemoryStream(jsonData.ToBytes()))
+      using (MemoryStream jsonStream = new MemoryStream(jsonData.getBytes(Charset.forName("UTF-8"))))
       {
         return this.PostRequest(url, jsonStream, "application/json");
       }
     }
 
-    public string PostRequestRaw(Uri url, Stream dataStream)
+    public String PostRequestRaw(URI url, Stream dataStream)
     {
       return this.PostRequest(url, dataStream, "application/octet-stream");
     }
 
-    public Stream GetRequestRaw(Uri url)
+    public Stream GetRequestRaw(URI url)
     {
       return this.httpClient.GetStreamAsync(url).Result;
     }
 
-    private string PostRequest(Uri url, Stream dataStream, string contentType)
+    private String PostRequest(URI url, Stream dataStream, String contentType)
     {
       using (StreamContent content = new StreamContent(dataStream, this.BufferSize))
       {
@@ -69,4 +63,3 @@ System.Net.Http.Headers;
       return new ProductInfoHeaderValue(assemblyName.Name, assemblyName.Version.ToString(2));
     }
   }
-}

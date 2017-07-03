@@ -1,6 +1,7 @@
 package megaapi.megaapiclient4java.Cryptography;
 
 import java.lang.reflect.Array;
+import java.nio.charset.Charset;
 
 public class Crypto {
 
@@ -78,7 +79,7 @@ public class Crypto {
 
     public static byte[] EncryptAttributes(Attributes attributes, byte[] nodeKey) {
         String data = "MEGA" + JsonConvert.SerializeObject(attributes, Formatting.None);
-        byte[] dataBytes = data.toBytes();
+        byte[] dataBytes = data.getBytes(Charset.forName("UTF-8"));
         dataBytes = dataBytes.CopySubArray(dataBytes.length + 16 - (dataBytes.length % 16));
         return EncryptAes(dataBytes, nodeKey);
     }

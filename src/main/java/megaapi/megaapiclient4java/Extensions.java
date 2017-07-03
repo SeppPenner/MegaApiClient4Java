@@ -1,4 +1,4 @@
-package MegaApiClient4Java;
+package megaapi.megaapiclient4java;
 
 import java.lang.reflect.Array;
 import java.util.Date;
@@ -29,7 +29,7 @@ public class Extensions {
         sb.Append(string.Empty.PadRight((4 - data.Length % 4) % 4, '='));
         sb.Replace('-', '+');
         sb.Replace('_', '/');
-        sb.Replace(",", string.Empty);
+        sb.Replace(",", "");
 
         return Convert.FromBase64String(sb.ToString());
     }

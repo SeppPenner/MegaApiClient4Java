@@ -1,71 +1,56 @@
-using System;
-using System.IO;
-using System.Threading;
+package megaapi.megaapiclient4java;
 
-namespace 
+import java.util.stream.Stream;
+import megaapi.megaapiclient4java.Exceptions.ArgumentNullException;
 
-CG.Web.MegaApiClient
-{
-  public class CancellableStream 
-: Stream
+  public class CancellableStream implements Stream
   {
     private Stream stream;
-    private readonly CancellationToken cancellationToken;
+    private final CancellationToken cancellationToken;
 
-    public CancellableStream(Stream stream, CancellationToken cancellationToken)
+    public CancellableStream(Stream stream, CancellationToken cancellationToken) throws ArgumentNullException
     {
       if (stream == null)
       {
-        throw new ArgumentNullException(nameof(stream));
+        throw new ArgumentNullException(stream.toString());
       }
 
       this.stream = stream;
       this.cancellationToken = cancellationToken;
     }
 
-    public override bool CanRead
+    public boolean canRead()
     {
-      get
-      {
-        this.cancellationToken.ThrowIfCancellationRequested();
-        return this.stream.CanRead;
+        cancellationToken.ThrowIfCancellationRequested();
+        return stream.canRead;
+    }
+
+    public boolean canSeek()
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return stream.CanSeek;
+    }
+
+    public boolean canWrite()
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return stream.CanWrite;
       }
     }
 
-    public override bool CanSeek
+    public void Flush()
     {
-      get
-      {
-        this.cancellationToken.ThrowIfCancellationRequested();
-        return this.stream.CanSeek;
-      }
+      cancellationToken.ThrowIfCancellationRequested();
+      stream.Flush();
     }
 
-    public override bool CanWrite
+    public long Length()
     {
-      get
-      {
-        this.cancellationToken.ThrowIfCancellationRequested();
-        return this.stream.CanWrite;
-      }
+        cancellationToken.ThrowIfCancellationRequested();
+        return stream.Length;
     }
 
-    public override void Flush()
-    {
-      this.cancellationToken.ThrowIfCancellationRequested();
-      this.stream.Flush();
-    }
-
-    public override long Length
-    {
-      get
-      {
-        this.cancellationToken.ThrowIfCancellationRequested();
-        return this.stream.Length;
-      }
-    }
-
-    public override long Position
+    public long Position
     {
       get
       {

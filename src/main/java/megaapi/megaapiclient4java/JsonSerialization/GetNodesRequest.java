@@ -2,11 +2,11 @@ package megaapi.megaapiclient4java.JsonSerialization;
 
 public class GetNodesRequest extends RequestBase {
 
-    public GetNodesRequest(String shareId = null){
+    public GetNodesRequest(String shareId){
         super("f");
         this.c = 1;
         if (shareId != null) {
-            this.QueryArguments["n"] = shareId;
+            super.setQueryArguments("n", shareId);
         }
     }
 

@@ -7,7 +7,7 @@ public class UploadException extends Exception {
         return "Upload error: " + error;
     }
 
-    private UploadException(String error) {
+    public UploadException(String error) {
         this.error = error;
     }
 

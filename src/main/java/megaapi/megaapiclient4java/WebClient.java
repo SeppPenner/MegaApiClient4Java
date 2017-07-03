@@ -1,6 +1,9 @@
 package MegaApiClient4Java;
 
 import MegaApiClient4Java.Interfaces.IWebClient;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.util.stream.Stream;
 
 public class WebClient extends IWebClient {
 
@@ -23,7 +26,7 @@ public class WebClient extends IWebClient {
     }
 
     public String PostRequestJson(URI url, String jsonData) {
-        using(MemoryStream jsonStream = new MemoryStream(jsonData.ToBytes())
+        using(MemoryStream jsonStream = new MemoryStream(jsonData.getBytes(Charset.forName("UTF-8")))
         
             )
       {
@@ -84,6 +87,6 @@ public class WebClient extends IWebClient {
 
     private String GenerateUserAgent() {
         AssemblyName assemblyName = Assembly.GetExecutingAssembly().GetName();
-        return string.Format("{0} v{1}", assemblyName.Name, assemblyName.Version.ToString(2));
+        return String.Format("{0} v{1}", assemblyName.Name, assemblyName.Version.ToString(2));
     }
 }

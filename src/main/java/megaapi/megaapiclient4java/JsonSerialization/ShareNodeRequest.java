@@ -1,5 +1,7 @@
 package megaapi.megaapiclient4java.JsonSerialization;
 
+import java.nio.charset.Charset;
+import java.util.Base64;
 import megaapi.megaapiclient4java.Cryptography.Crypto;
 import megaapi.megaapiclient4java.Interfaces.INode;
 import megaapi.megaapiclient4java.Interfaces.INodeCrypto;
@@ -13,20 +15,15 @@ public class ShareNodeRequest extends RequestBase {
 
         INodeCrypto nodeCrypto = (INodeCrypto) node;
     byte[] uncryptedSharedKey = nodeCrypto.getSharedKey();
-    if (uncryptedSharedKey
-
-    
-        == null){
-            uncryptedSharedKey = Crypto.CreateAesKey();
+    if (uncryptedSharedKey == null){
+        uncryptedSharedKey = Crypto.CreateAesKey();
     }
-
-     
-    this.sharedKey  = Crypto.EncryptKey(uncryptedSharedKey, masterKey).ToBase64();
-
-    if (nodeCrypto.getSharedKey()
-
     
-        == null){
+    byte [] encryptedSharedKeyKey = Crypto.EncryptKey(uncryptedSharedKey, masterKey);
+    
+    this.sharedKey  = Base64.getEncoder().encodeToString(encryptedSharedKeyKey);
+
+    if (nodeCrypto.getSharedKey()== null){
             this.share = new ShareData(node.getId());
 
         this.share.AddItem(node.getId(), nodeCrypto.getFullKey(), uncryptedSharedKey);
@@ -38,9 +35,12 @@ public class ShareNodeRequest extends RequestBase {
         }
     }
 
-    byte[] handle = (node.getId() + node.getId()).ToBytes();
+    byte[] handle = (node.getId() + node.getId()).getBytes(Charset.forName("UTF-8"));
      
-    this.handleAuth  = Crypto.EncryptKey(handle, masterKey).ToBase64();
+    byte[] encryptedHandle = Crypto.EncryptKey(handle, masterKey);
+    
+    this.handleAuth  = Base64.getEncoder().encodeToString(encryptedHandle);
+    
 
 private Iterable<INode> GetRecursiveChildren(INode[] nodes, INode parent){
         for (var node in nodes.Where(x => x.Type == NodeType.Directory || x.Type == NodeType.File)){
@@ -48,7 +48,7 @@ private Iterable<INode> GetRecursiveChildren(INode[] nodes, INode parent){
             do
             {
                 parentId = nodes.FirstOrDefault(x => x.Id == parentId)?.ParentId;
-                if(parentId == parent.getId())
+                if(parentId == null ? parent.getId() == null : parentId.equals(parent.getId()))
                 {
                     yield return node;
                     break;
@@ -65,7 +65,7 @@ private Iterable<INode> GetRecursiveChildren(INode[] nodes, INode parent){
     }
     
     @JsonProperty("ha")
-        private String handleAuth;
+        private final String handleAuth;
 
     public String getHandleAuth(){
         return handleAuth;
@@ -86,7 +86,7 @@ private Iterable<INode> GetRecursiveChildren(INode[] nodes, INode parent){
     }
 
     @JsonProperty("ok")
-        private String sharedKey;
+        private final String sharedKey;
 
     public String getSharedKey(){
         return sharedKey;

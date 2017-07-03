@@ -1,5 +1,7 @@
 package megaapi.megaapiclient4java.JsonSerialization;
 
+import java.util.Base64;
+import megaapi.megaapiclient4java.Cryptography.Crypto;
 import megaapi.megaapiclient4java.Exceptions.ArgumentException;
 
 public class ShareDataConverter extends JsonConverter {
@@ -26,25 +28,22 @@ public class ShareDataConverter extends JsonConverter {
 
         writer.WriteStartArray();
         int counter = 0;
-        foreach(ShareDataItem item:
-        data.Items
-        
-            ){
+        for(ShareDataItem item:data.getItems()){
             writer.WriteValue(0);
             writer.WriteValue(counter++);
-            writer.WriteValue(Crypto.EncryptKey(item.getData(), item.getKey()).ToBase64());
+            byte[] encryptedKey = Crypto.EncryptKey(item.getData(), item.getKey());
+            String encryptedKeyBase64 = Base64.getEncoder().encodeToString(encryptedKey);
+            writer.WriteValue(encryptedKeyBase64);
         }
         writer.WriteEndArray();
 
         writer.WriteEndArray();
     }
 
-    @Override
     public Object readJson(JsonReader reader, Type objectType, Object existingValue, JsonSerializer serializer) {
         throw new NotImplementedException();
     }
 
-    @Override
     public boolean canConvert(Type objectType) {
         return objectType == typeof(ShareData);
     }

@@ -1,7 +1,10 @@
 package megaapi.megaapiclient4java;
 
+import java.lang.reflect.Array;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.util.Base64;
 import megaapi.megaapiclient4java.Interfaces.IMegaApiClient;
 import megaapi.megaapiclient4java.Interfaces.IWebClient;
 import java.util.Random;
@@ -11,12 +14,15 @@ import java.util.stream.Stream;
 import megaapi.megaapiclient4java.Cryptography.BigInteger;
 import megaapi.megaapiclient4java.Cryptography.Crypto;
 import megaapi.megaapiclient4java.Enumerations.NodeType;
+import megaapi.megaapiclient4java.Exceptions.ApiException;
 import megaapi.megaapiclient4java.Exceptions.ArgumentException;
 import megaapi.megaapiclient4java.Exceptions.ArgumentNullException;
+import megaapi.megaapiclient4java.Exceptions.NotSupportedException;
 import megaapi.megaapiclient4java.Exceptions.UploadException;
 import megaapi.megaapiclient4java.Interfaces.IAccountInformation;
 import megaapi.megaapiclient4java.Interfaces.INode;
 import megaapi.megaapiclient4java.Interfaces.INodeCrypto;
+import megaapi.megaapiclient4java.Interfaces.INodeInfo;
 import megaapi.megaapiclient4java.JsonSerialization.AccountInformationRequest;
 import megaapi.megaapiclient4java.JsonSerialization.AccountInformationResponse;
 import megaapi.megaapiclient4java.JsonSerialization.AnonymousLoginRequest;
@@ -27,11 +33,14 @@ import megaapi.megaapiclient4java.JsonSerialization.DeleteRequest;
 import megaapi.megaapiclient4java.JsonSerialization.DownloadUrlRequest;
 import megaapi.megaapiclient4java.JsonSerialization.DownloadUrlResponse;
 import megaapi.megaapiclient4java.JsonSerialization.GetDownloadLinkRequest;
+import megaapi.megaapiclient4java.JsonSerialization.GetNodesRequest;
 import megaapi.megaapiclient4java.JsonSerialization.GetNodesResponse;
 import megaapi.megaapiclient4java.JsonSerialization.LoginRequest;
 import megaapi.megaapiclient4java.JsonSerialization.LoginResponse;
 import megaapi.megaapiclient4java.JsonSerialization.LogonSessionToken;
 import megaapi.megaapiclient4java.JsonSerialization.LogoutRequest;
+import megaapi.megaapiclient4java.JsonSerialization.MoveRequest;
+import megaapi.megaapiclient4java.JsonSerialization.RenameRequest;
 import megaapi.megaapiclient4java.JsonSerialization.RequestBase;
 import megaapi.megaapiclient4java.JsonSerialization.ShareNodeRequest;
 
@@ -136,7 +145,7 @@ public class MegaApiClient implements IMegaApiClient{
       }
 
       // Retrieve password as UTF8 byte array
-      byte[] passwordBytes = password.ToBytes();
+      byte[] passwordBytes = password.getBytes(Charset.forName("UTF-8"));
 
       // Encrypt password to use password as key for the hash
       byte[] passwordAesKey = PrepareKey(passwordBytes);
@@ -188,7 +197,7 @@ public class MegaApiClient implements IMegaApiClient{
         throw new ArgumentNullException("authInfos");
       }
 
-      this.EnsureLoggedOut();
+      this.ensureLoggedOut();
       this.authenticatedLogin = true;
 
       // Request Mega Api
@@ -208,7 +217,8 @@ public class MegaApiClient implements IMegaApiClient{
       byte[] sid = Crypto.RsaDecrypt(encryptedSid.FromMPINumber(), rsaPrivateKeyComponents[0], rsaPrivateKeyComponents[1], rsaPrivateKeyComponents[2]);
 
       // Session id contains only the first 58 base64 characters
-      this.sessionId = sid.ToBase64().Substring(0, 58);
+      String encryptedSidBase64 = Base64.getEncoder().encodeToString(sid);
+      this.sessionId = encryptedSidBase64.substring(0, 58);
 
       return new LogonSessionToken(this.sessionId, this.masterKey);
     }
@@ -216,7 +226,7 @@ public class MegaApiClient implements IMegaApiClient{
     @Override
     public void login(LogonSessionToken logonSessionToken)
     {
-      this.EnsureLoggedOut();
+      this.ensureLoggedOut();
       this.authenticatedLogin = true;
       this.sessionId = logonSessionToken.getSessionId();
       this.masterKey = logonSessionToken.getMasterKey();
@@ -228,7 +238,7 @@ public class MegaApiClient implements IMegaApiClient{
     /// <exception cref="ApiException">Throws if service is not available</exception>
     public void LoginAnonymous()
     {
-      this.EnsureLoggedOut();
+      this.ensureLoggedOut();
       this.authenticatedLogin = false;
 
       Random random = new Random();
@@ -251,10 +261,13 @@ public class MegaApiClient implements IMegaApiClient{
       byte[] encryptedSessionChallenge = Crypto.EncryptAes(sessionChallenge, this.masterKey);
       byte[] encryptedSession = new byte[32];
       Array.Copy(sessionChallenge, 0, encryptedSession, 0, 16);
-      Array.Copy(encryptedSessionChallenge, 0, encryptedSession, 16, encryptedSessionChallenge.Length);
+      Array.Copy(encryptedSessionChallenge, 0, encryptedSession, 16, encryptedSessionChallenge.length);
 
       // Request Mega Api to obtain a temporary user handle
-      AnonymousLoginRequest currentRequest = new AnonymousLoginRequest(encryptedMasterKey.ToBase64(), encryptedSession.ToBase64());
+      String encryptedMasterKeyBase64 = Base64.getEncoder().encodeToString(encryptedMasterKey);
+      String encryptedSessionBase64 = Base64.getEncoder().encodeToString(encryptedSession);
+
+      AnonymousLoginRequest currentRequest = new AnonymousLoginRequest(encryptedMasterKeyBase64, encryptedSessionBase64);
       String userHandle = this.Request(currentRequest);
 
       // Request Mega Api to retrieve our temporary session id
@@ -404,8 +417,13 @@ public class MegaApiClient implements IMegaApiClient{
       byte[] attributes = Crypto.EncryptAttributes(new Attributes(name), currentKey);
       byte[] encryptedKey = Crypto.EncryptAes(currentKey, this.masterKey);
 
-      CreateNodeRequest currentRequest = CreateNodeRequest.CreateFolderNodeRequest(parent, attributes.ToBase64(), encryptedKey.ToBase64(), currentKey);
-      GetNodesResponse response = this.Request<GetNodesResponse>(request, this.masterKey);
+      String attributesBase64 = Base64.getEncoder().encodeToString(attributes);
+      String encryptedKeyBase64 = Base64.getEncoder().encodeToString(encryptedKey);
+      
+      
+      CreateNodeRequest currentRequest = CreateNodeRequest.CreateFolderNodeRequest(parent, attributesBase64, 
+              encryptedKeyBase64, currentKey);
+      GetNodesResponse response = this.Request<GetNodesResponse>(request, masterKey);
       return response.getNodes()[0];
     }
 
@@ -450,11 +468,14 @@ public class MegaApiClient implements IMegaApiClient{
       GetDownloadLinkRequest currentRequest = new GetDownloadLinkRequest(node);
       String response = this.Request<String>(currentRequest);
 
+      String nodeCryptoFullKeyBase64 = Base64.getEncoder().encodeToString(nodeCrypto.getFullKey());
+      String nodeCryptoSharedKeyBase64 = Base64.getEncoder().encodeToString(nodeCrypto.getSharedKey());
+      
       return new URI(BaseUri, String.format(
           "/#{0}!{1}!{2}",
           nodesType == NodeType.Directory ? "F" : "",
           response,
-          nodesType == NodeType.Directory ? nodeCrypto.getSharedKey().ToBase64() : nodeCrypto.getFullKey().ToBase64()));
+          nodesType == NodeType.Directory ? nodeCryptoSharedKeyBase64 : nodeCryptoFullKeyBase64));
     }
 
     /// <summary>
@@ -535,7 +556,7 @@ public class MegaApiClient implements IMegaApiClient{
         throw new ArgumentException("Invalid node");
       }
 
-      INodeCrypto nodeCrypto = node as INodeCrypto;
+      INodeCrypto nodeCrypto = (INodeCrypto) node ;
       if (nodeCrypto == null)
       {
         throw new ArgumentException("node must implement INodeCrypto");
@@ -567,7 +588,7 @@ public class MegaApiClient implements IMegaApiClient{
     /// <exception cref="ArgumentNullException">uri is null</exception>
     /// <exception cref="ArgumentException">Uri is not valid (id and key are required)</exception>
     /// <exception cref="DownloadException">Checksum is invalid. Downloaded data are corrupted</exception>
-    public Stream Download(Uri uri, CancellationToken cancellationToken) throws ArgumentNullException
+    public Stream Download(URI uri, CancellationToken cancellationToken) throws ArgumentNullException
     {
       if (uri == null)
       {
@@ -587,12 +608,10 @@ public class MegaApiClient implements IMegaApiClient{
       Stream dataStream = this.webClient.GetRequestRaw(new Uri(downloadResponse.Url));
 
       Stream resultStream = new MegaAesCtrStreamDecrypter(dataStream, downloadResponse.Size, key, iv, metaMac);
-#if !NET35
       if (cancellationToken.HasValue)
       {
         resultStream = new CancellableStream(resultStream, cancellationToken.Value);
       }
-#endif
       return resultStream;
     }
 
@@ -604,7 +623,7 @@ public class MegaApiClient implements IMegaApiClient{
     /// <exception cref="ApiException">Mega.co.nz service reports an error</exception>
     /// <exception cref="ArgumentNullException">uri is null</exception>
     /// <exception cref="ArgumentException">Uri is not valid (id and key are required)</exception>
-    public INodeInfo GetNodeFromLink(Uri uri)
+    public INodeInfo GetNodeFromLink(URI uri) throws ArgumentNullException
     {
       if (uri == null)
       {
@@ -613,7 +632,7 @@ public class MegaApiClient implements IMegaApiClient{
 
       this.ensureLoggedIn();
 
-      string id;
+      String id;
       byte[] iv, metaMac, key;
       this.GetPartsFromUri(uri, out id, out iv, out metaMac, out key);
 
@@ -633,7 +652,7 @@ public class MegaApiClient implements IMegaApiClient{
     /// <exception cref="ApiException">Mega.co.nz service reports an error</exception>
     /// <exception cref="ArgumentNullException">uri is null</exception>
     /// <exception cref="ArgumentException">Uri is not valid (id and key are required)</exception>
-    public IEnumerable<INode> GetNodesFromLink(Uri uri)
+    public Iterable<INode> GetNodesFromLink(URI uri) throws ArgumentNullException
     {
       if (uri == null)
       {
@@ -642,7 +661,7 @@ public class MegaApiClient implements IMegaApiClient{
 
       this.ensureLoggedIn();
 
-      string shareId;
+      String shareId;
       byte[] iv, metaMac, key;
       this.GetPartsFromUri(uri, out shareId, out iv, out metaMac, out key);
 
@@ -664,13 +683,9 @@ public class MegaApiClient implements IMegaApiClient{
     /// <exception cref="ArgumentNullException">filename or parent is null</exception>
     /// <exception cref="FileNotFoundException">filename is not found</exception>
     /// <exception cref="ArgumentException">parent is not valid (all types except <see cref="NodeType.File" /> are supported)</exception>
-#if NET35
-    public INode UploadFile(string filename, INode parent)
-#else
-    public INode UploadFile(string filename, INode parent, CancellationToken? cancellationToken = null)
-#endif
+    public INode UploadFile(string filename, INode parent, CancellationToken? cancellationToken = null) throws ArgumentNullException
     {
-      if (string.IsNullOrEmpty(filename))
+      if (String.IsNullOrEmpty(filename))
       {
         throw new ArgumentNullException("filename");
       }
@@ -687,14 +702,10 @@ public class MegaApiClient implements IMegaApiClient{
 
       this.ensureLoggedIn();
 
-      DateTime modificationDate = File.GetLastWriteTime(filename);
+      Date modificationDate = File.GetLastWriteTime(filename);
       using (FileStream fileStream = new FileStream(filename, FileMode.Open, FileAccess.Read))
       {
-#if NET35
-        return this.Upload(fileStream, Path.GetFileName(filename), parent, modificationDate);
-#else
         return this.Upload(fileStream, Path.GetFileName(filename), parent, modificationDate, cancellationToken);
-#endif
       }
     }
 
@@ -709,18 +720,14 @@ public class MegaApiClient implements IMegaApiClient{
     /// <exception cref="ApiException">Mega.co.nz service reports an error</exception>
     /// <exception cref="ArgumentNullException">stream or name or parent is null</exception>
     /// <exception cref="ArgumentException">parent is not valid (all types except <see cref="NodeType.File" /> are supported)</exception>
-#if NET35
-    public INode Upload(Stream stream, string name, INode parent, DateTime? modificationDate = null)
-#else
-    public INode Upload(Stream stream, string name, INode parent, DateTime? modificationDate = null, CancellationToken? cancellationToken = null)
-#endif
+    public INode Upload(Stream stream, String name, INode parent, Date modificationDate, CancellationToken cancellationToken) throws ArgumentNullException, UploadException, ApiException
     {
       if (stream == null)
       {
         throw new ArgumentNullException("stream");
       }
 
-      if (string.IsNullOrEmpty(name))
+      if (String.IsNullOrEmpty(name))
       {
         throw new ArgumentNullException("name");
       }
@@ -737,20 +744,18 @@ public class MegaApiClient implements IMegaApiClient{
 
       this.ensureLoggedIn();
 
-#if !NET35
       if (cancellationToken.HasValue)
       {
         stream = new CancellableStream(stream, cancellationToken.Value);
       }
-#endif
 
-      string completionHandle = string.Empty;
-      int requestDelay = this.options.ApiRequestDelay;
-      int remainingRetry = this.options.ApiRequestAttempts;
+      String completionHandle = "";
+      int requestDelay = this.options.getApiRequestDelay();
+      int remainingRetry = this.options.getApiRequestAttempts();
       while (remainingRetry-- > 0)
       {
         // Retrieve upload URL
-        UploadUrlRequest uploadRequest = new UploadUrlRequest(stream.Length);
+        UploadUrlRequest uploadRequest = new UploadUrlRequest(stream.length);
         UploadUrlResponse uploadResponse = this.Request<UploadUrlResponse>(uploadRequest);
 
         ApiResultCode apiResult = ApiResultCode.Ok;
@@ -758,10 +763,10 @@ public class MegaApiClient implements IMegaApiClient{
         {
           var chunkStartPosition = 0;
           var chunksSizesToUpload = this.ComputeChunksSizesToUpload(encryptedStream.ChunksPositions, encryptedStream.Length).ToArray();
-          Uri uri = null;
+          URI uri = null;
           for (int i = 0; i < chunksSizesToUpload.Length; i++)
           {
-            completionHandle = string.Empty;
+            completionHandle = "";
 
             int chunkSize = chunksSizesToUpload[i];
             byte[] chunkBuffer = new byte[chunkSize];
@@ -769,12 +774,12 @@ public class MegaApiClient implements IMegaApiClient{
 
             using (MemoryStream chunkStream = new MemoryStream(chunkBuffer))
             {
-              uri = new Uri(uploadResponse.Url + "/" + chunkStartPosition);
+              uri = new URI(uploadResponse.Url + "/" + chunkStartPosition);
               chunkStartPosition += chunkSize;
               try
               {
                 completionHandle = this.webClient.PostRequestRaw(uri, chunkStream);
-                if (string.IsNullOrEmpty(completionHandle))
+                if (String.IsNullOrEmpty(completionHandle))
                 {
                   apiResult = ApiResultCode.Ok;
                   continue;
@@ -834,9 +839,14 @@ public class MegaApiClient implements IMegaApiClient{
 
           byte[] encryptedKey = Crypto.EncryptKey(fileKey, this.masterKey);
 
-          CreateNodeRequest createNodeRequest = CreateNodeRequest.CreateFileNodeRequest(parent, cryptedAttributes.ToBase64(), encryptedKey.ToBase64(), fileKey, completionHandle);
+          String cryptedAttributesBase64 = Base64.getEncoder().encodeToString(cryptedAttributes);
+          String encryptedKeyBase64 = Base64.getEncoder().encodeToString(encryptedKey);
+          
+          
+          CreateNodeRequest createNodeRequest = CreateNodeRequest.CreateFileNodeRequest(parent, 
+                  cryptedAttributesBase64, encryptedKeyBase64, fileKey, completionHandle);
           GetNodesResponse createNodeResponse = this.Request<GetNodesResponse>(createNodeRequest, this.masterKey);
-          return createNodeResponse.Nodes[0];
+          return createNodeResponse.getNodes()[0];
         }
       }
 
@@ -855,7 +865,7 @@ public class MegaApiClient implements IMegaApiClient{
     /// <exception cref="ArgumentException">node is not valid (only <see cref="NodeType.Directory" /> and <see cref="NodeType.File" /> are supported)</exception>
     /// <exception cref="ArgumentException">parent is not valid (all types except <see cref="NodeType.File" /> are supported)</exception>
     @Override
-    public INode move(INode node, INode destinationParentNode)
+    public INode move(INode node, INode destinationParentNode) throws ArgumentNullException thorws ArgumentException
     {
       if (node == null)
       {
@@ -885,7 +895,7 @@ public class MegaApiClient implements IMegaApiClient{
       return this.GetNodes().First(n => n.Equals(node));
     }
 
-    public INode Rename(INode node, String newName)
+    public INode Rename(INode node, String newName) throws ArgumentException
     {
       if (node == null)
       {
@@ -912,15 +922,18 @@ public class MegaApiClient implements IMegaApiClient{
 
       this.ensureLoggedIn();
 
-      byte[] encryptedAttributes = Crypto.EncryptAttributes(new Attributes(newName, ((Node)node).Attributes), nodeCrypto.Key);
-      this.Request(new RenameRequest(node, encryptedAttributes.ToBase64()));
+      byte[] encryptedAttributes = Crypto.EncryptAttributes(new Attributes(newName, ((Node)node).Attributes), nodeCrypto.getKey());
+      
+      String encryptedBase64 = Base64.getEncoder().encodeToString(encryptedAttributes);
+      
+      this.Request(new RenameRequest(node, encryptedBase64));
       return this.GetNodes().First(n => n.Equals(node));
     }
 
 
     private static String generateHash(String email, byte[] passwordAesKey)
     {
-      byte[] emailBytes = email.ToBytes();
+      byte[] emailBytes = email.getBytes(Charset.forName("UTF-8"));
       byte[] hash = new byte[16];
 
       // Compute email in 16 bytes array
@@ -940,7 +953,7 @@ public class MegaApiClient implements IMegaApiClient{
       Array.Copy(hash, 0, result, 0, 4);
       Array.Copy(hash, 8, result, 4, 4);
 
-      return result.ToBase64();
+      return Base64.getEncoder().encodeToString(result);
     }
 
     private static byte[] PrepareKey(byte[] data)
@@ -1033,14 +1046,14 @@ public class MegaApiClient implements IMegaApiClient{
       return (typeof(TResponse) == typeof(string)) ? data as TResponse : JsonConvert.DeserializeObject<TResponse>(data, settings);
     }
 
-    private Uri GenerateUrl(NameValueCollection queryArguments)
+    private URI GenerateUrl(NameValueCollection queryArguments)
     {
       UriBuilder builder = new UriBuilder(BaseApiUri);
       NameValueCollection query = HttpUtility.ParseQueryString(builder.Query);
       query["id"] = (this.sequenceIndex++ % uint.MaxValue).ToString(CultureInfo.InvariantCulture);
       query["ak"] = this.options.ApplicationKey;
 
-      if (!string.IsNullOrEmpty(this.sessionId))
+      if (!String.IsNullOrEmpty(this.sessionId))
       {
         query["sid"] = this.sessionId;
       }
@@ -1055,12 +1068,12 @@ public class MegaApiClient implements IMegaApiClient{
     {
       using (FileStream fs = new FileStream(outputFile, FileMode.CreateNew, FileAccess.Write))
       {
-        stream.CopyTo(fs, this.options.BufferSize);
+        stream.CopyTo(fs, this.options.getBufferSize());
       }
     }
 
 
-    private void ensureLoggedIn()
+    private void ensureLoggedIn() throws NotSupportedException
     {
       if (this.sessionId == null)
       {
@@ -1068,7 +1081,7 @@ public class MegaApiClient implements IMegaApiClient{
       }
     }
 
-    private void EnsureLoggedOut()
+    private void ensureLoggedOut() throws NotSupportedException
     {
       if (this.sessionId != null)
       {
@@ -1076,7 +1089,7 @@ public class MegaApiClient implements IMegaApiClient{
       }
     }
 
-    private void GetPartsFromUri(Uri uri, out string id, out byte[] iv, out byte[] metaMac, out byte[] key)
+    private void GetPartsFromUri(URI uri, out String id, out byte[] iv, out byte[] metaMac, out byte[] key)
     {
       Regex uriRegex = new Regex("#(?<type>F?)!(?<id>.+)!(?<key>.+)");
       Match match = uriRegex.Match(uri.Fragment);
@@ -1101,7 +1114,7 @@ public class MegaApiClient implements IMegaApiClient{
       }
     }
 
-    private IEnumerable<int> ComputeChunksSizesToUpload(long[] chunksPositions, long streamLength)
+    private Iterable<int> ComputeChunksSizesToUpload(long[] chunksPositions, long streamLength)
     {
       for (int i = 0; i < chunksPositions.length; i++)
       {
@@ -1110,8 +1123,11 @@ public class MegaApiClient implements IMegaApiClient{
           ? streamLength
           : chunksPositions[i + 1];
 
+        int optionsChuncksPackSize = options.getChunksPackSize();
+        
         // Pack multiple chunks in a single upload
-        while (((int)(nextChunkPosition - currentChunkPosition) < this.options.ChunksPackSize || this.options.ChunksPackSize == -1) && i < chunksPositions.Length - 1)
+        while (((int)(nextChunkPosition - currentChunkPosition) < optionsChuncksPackSize ||
+                optionsChuncksPackSize == -1) && i < chunksPositions.length - 1)
         {
           i++;
           nextChunkPosition = i == chunksPositions.length - 1

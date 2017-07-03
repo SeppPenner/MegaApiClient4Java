@@ -18,6 +18,10 @@ public abstract class RequestBase {
     private final NameValueCollection queryArguments;
 
     public NameValueCollection getQueryArguments() {
-        return action;
+        return queryArguments;
+    }
+    
+    public NameValueCollection setQueryArguments(String name, NameValue queryArgument) {
+        this.queryArguments[name] = queryArgument;
     }
 }
