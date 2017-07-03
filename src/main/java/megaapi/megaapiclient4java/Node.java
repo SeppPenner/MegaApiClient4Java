@@ -151,7 +151,7 @@ public class Node extends NodeInfo implements INode, INodeCrypto {
           if (type == NodeType.File)
           {
             byte[] currentIv, currentMetaMac, currentFileKey;
-            Crypto.GetPartsFromDecryptedKey(this.FullKey, out currentIv, out currentMetaMac, out currentFileKey);
+            Crypto.getPartsFromDecryptedKey(this.FullKey, out currentIv, out currentMetaMac, out currentFileKey);
 
             iv = currentIv;
             metaMac = currentMetaMac;
