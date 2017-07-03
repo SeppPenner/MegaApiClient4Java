@@ -1,29 +1,32 @@
-package MegaApiClient4Java;
+package megaapi.megaapiclient4java;
 
-import MegaApiClient4Java.Interfaces.IWebClient;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.stream.Stream;
+import megaapi.megaapiclient4java.Interfaces.IWebClient;
 
 public class WebClient extends IWebClient {
 
-    private const int DefaultResponseTimeout = Timeout.Infinite;
-
+    private final int DefaultResponseTimeout = Timeout.Infinite;
     private final int responseTimeout;
     private final String userAgent;
 
+    public WebClient()
+    {
+        BufferSize = Options.DefaultBufferSize;
+        this.responseTimeout = responseTimeout;
+        userAgent = generateUserAgent();
+    }
+    
     public WebClient(int responseTimeout 
         = DefaultResponseTimeout, string userAgent = null)
     {
-      this.BufferSize = Options.DefaultBufferSize;
+        BufferSize = Options.DefaultBufferSize;
         this.responseTimeout = responseTimeout;
         this.userAgent = userAgent ?  ? this.GenerateUserAgent();
     }
 
-    public int BufferSize
-
-    {get;set;
-    }
+    public int BufferSize;
 
     public String PostRequestJson(URI url, String jsonData) {
         using(MemoryStream jsonStream = new MemoryStream(jsonData.getBytes(Charset.forName("UTF-8")))
@@ -77,7 +80,7 @@ public class WebClient extends IWebClient {
         }
     }
 
-    private HttpWebRequest CreateRequest(URI url) {
+    private HttpWebRequest createRequest(URI url) {
         HttpWebRequest request = (HttpWebRequest) WebRequest.Create(url);
         request.Timeout = this.responseTimeout;
         request.UserAgent = this.userAgent;
@@ -85,7 +88,7 @@ public class WebClient extends IWebClient {
         return request;
     }
 
-    private String GenerateUserAgent() {
+    private String generateUserAgent() {
         AssemblyName assemblyName = Assembly.GetExecutingAssembly().GetName();
         return String.Format("{0} v{1}", assemblyName.Name, assemblyName.Version.ToString(2));
     }

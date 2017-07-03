@@ -1,81 +1,114 @@
-package MegaApiClient4Java;
+package megaapi.MegaApiClient4Java;
 
-import MegaApiClient4Java.Interfaces.INode;
-import MegaApiClient4Java.Interfaces.INodeCrypto;
-
-internal 
-
-class Node
-
-return this.equals(obj as INodeInfo);
-    
-
-}
-
-  }
+import java.util.Date;
+import megaapi.megaapiclient4java.Cryptography.Crypto;
+import megaapi.megaapiclient4java.Enumerations.NodeType;
+import megaapi.megaapiclient4java.Interfaces.INode;
+import megaapi.megaapiclient4java.Interfaces.INodeCrypto;
+import megaapi.megaapiclient4java.JsonSerialization.GetNodesResponse;
+import megaapi.megaapiclient4java.JsonSerialization.SharedKey;
+import megaapi.megaapiclient4java.NodeInfo;
 
 public class Node extends NodeInfo implements INode, INodeCrypto {
 
-    private Node() {
+    public Node() {
     }
 
-    [
-
-    JsonProperty(
-    "p")]
-    public string ParentId
-
-    {get; private set ;
-}
-
-[JsonProperty("u")]
-    public string Owner { get; private set; }
-
-    [JsonProperty("su")]
-    public string SharingId { get; set; }
-
-    [JsonProperty("sk")]
-    public string SharingKey { get; set; }
-
-    [JsonIgnore]
-    public DateTime CreationDate { get; private set; }
-
-    [JsonIgnore]
-    public byte[] Key { get; private set; }
-
-    [JsonIgnore]
-    public byte[] FullKey { get; private set; }
-
-    [JsonIgnore]
-    public byte[] SharedKey { get; private set; }
-
-    [JsonIgnore]
-    public byte[] Iv { get; private set; }
-
-    [JsonIgnore]
-    public byte[] MetaMac { get; private set; }
+    @JsonProperty("p")]
+    private String parentId;
+    
+    public String getParentId(){
+        return parentId;
+    }
 
 
-    [JsonProperty("ts")]
-    private long SerializedCreationDate { get; set; }
+    @JsonProperty("u")
+    private String owner;
+    
+    public String getOwner(){
+        return owner;
+    }
 
-    [JsonProperty("a")]
-    private string SerializedAttributes { get; set; }
+    @JsonProperty("su")
+    private String sharingId;
+    
+    public String getSharingId(){
+        return sharingId;
+    }
+    
+    @JsonProperty("sk")
+    private String sharingKey;
+    
+    public String getSharingKey(){
+        return sharingKey;
+    }
 
-    [JsonProperty("k")]
-    private string SerializedKey { get; set; }
+    @JsonIgnore
+    private Date creationDate;
+    
+    public Date getCreationDate(){
+        return creationDate;
+    }
 
-    [OnDeserialized]
+    @JsonIgnore
+    private byte[] key;
+    
+    @Override
+    public byte[] getKey(){
+        return key;
+    }
+    
+    @JsonIgnore
+    private byte[] fullkey;
+    
+    @Override
+    public byte[] getFullKey(){
+        return fullkey;
+    }
+    
+    @JsonIgnore
+    private byte[] sharedkey;
+    
+    public byte[] getSharedkey(){
+        return sharedkey;
+    }
+
+    @JsonIgnore
+    private byte[] iv;
+    
+    @Override
+    public byte[] getIv(){
+        return iv;
+    }
+
+    @JsonIgnore
+    private byte[] metaMac;
+    
+    @Override
+    public byte[] getMetaMac(){
+        return metaMac;
+    }
+
+    @JsonProperty("ts")
+    public long SerializedCreationDate;
+
+    @JsonProperty("a")
+    public String SerializedAttributes;
+
+    @JsonProperty("k")
+    public String SerializedKey;
+
+    @OnDeserialized
     public void OnDeserialized(StreamingContext ctx)
     {
-      object[] context = (object[])ctx.Context;
+      Object[] context = (Object[])ctx.Context;
       GetNodesResponse nodesResponse = (GetNodesResponse)context[0];
-      if (context.Length == 1)
+      if (context.length == 1)
       {
         // Add key from incoming sharing.
-        if (this.SharingKey != null && nodesResponse.SharedKeys.Any(x => x.Id == this.Id) == false)
+        if (sharingKey != null && nodesResponse.SharedKeys.Any(x => x.Id == id) == false)
         {
-          nodesResponse.SharedKeys.Add(new SharedKey(this.Id, this.SharingKey));
+          nodesResponse.addSharedKey(new SharedKey(id, sharingKey));
         }
         return;
       }
@@ -83,53 +116,52 @@ public class Node extends NodeInfo implements INode, INodeCrypto {
       {
         byte[] masterKey = (byte[])context[1];
 
-        this.CreationDate = this.SerializedCreationDate.ToDateTime();
+        creationDate = serializedCreationDate.ToDateTime();
 
-        if (this.Type == NodeType.File || this.Type == NodeType.Directory)
+        if (type == NodeType.File || type == NodeType.Directory)
         {
           // There are cases where the SerializedKey property contains multiple keys separated with /
           // This can occur when a folder is shared and the parent is shared too.
           // Both keys are working so we use the first one
-          string serializedKey = this.SerializedKey.Split('/')[0];
+          String serializedKey = this.SerializedKey.Split('/')[0];
           int splitPosition = serializedKey.IndexOf(":", StringComparison.InvariantCulture);
-          byte[] encryptedKey = serializedKey.Substring(splitPosition + 1).FromBase64();
+          byte[] encryptedKey = serializedKey.substring(splitPosition + 1).FromBase64();
 
           // If node is shared, we need to retrieve shared masterkey
-          if (nodesResponse.SharedKeys != null)
+          if (nodesResponse.getSharedKeys() != null)
           {
-            string handle = serializedKey.Substring(0, splitPosition);
+            String handle = serializedKey.substring(0, splitPosition);
             SharedKey sharedKey = nodesResponse.SharedKeys.FirstOrDefault(x => x.Id == handle);
             if (sharedKey != null)
             {
-              masterKey = Crypto.DecryptKey(sharedKey.Key.FromBase64(), masterKey);
-              if (this.Type == NodeType.Directory)
+              masterKey = Crypto.DecryptKey(sharedKey.getKey().FromBase64(), masterKey);
+              if (type == NodeType.Directory)
               {
-                this.SharedKey = masterKey;
+                sharedKey = masterKey;
               }
               else
               {
-                this.SharedKey = Crypto.DecryptKey(encryptedKey, masterKey);
+                sharedKey = Crypto.DecryptKey(encryptedKey, masterKey);
               }
             }
           }
 
-          this.FullKey = Crypto.DecryptKey(encryptedKey, masterKey);
+          fullKey = Crypto.DecryptKey(encryptedKey, masterKey);
 
-          if (this.Type == NodeType.File)
+          if (type == NodeType.File)
           {
-            byte[] iv, metaMac, fileKey;
-            Crypto.GetPartsFromDecryptedKey(this.FullKey, out iv, out metaMac, out fileKey);
+            byte[] currentIv, currentMetaMac, currentFileKey;
+            Crypto.GetPartsFromDecryptedKey(this.FullKey, out currentIv, out currentMetaMac, out currentFileKey);
 
-            this.Iv = iv;
-            this.MetaMac = metaMac;
-            this.Key = fileKey;
+            iv = currentIv;
+            metaMac = currentMetaMac;
+            key = currentFileKey;
           }
           else
           {
-            this.Key = this.FullKey;
+            key = fullKey;
           }
 
-          this.Attributes = Crypto.DecryptAttributes(this.SerializedAttributes.FromBase64(), this.Key);
+          attributes = Crypto.DecryptAttributes(this.SerializedAttributes.FromBase64(), key);
         }
       }
-    }

@@ -1,6 +1,10 @@
 package megaapi.megaapiclient4java;
 
-import MegaApiClient4Java.Interfaces.INodeInfo;
+import java.util.Date;
+import megaapi.megaapiclient4java.Cryptography.Crypto;
+import megaapi.megaapiclient4java.Enumerations.NodeType;
+import megaapi.megaapiclient4java.Interfaces.INodeInfo;
+import megaapi.megaapiclient4java.JsonSerialization.DownloadUrlResponse;
 
 public class NodeInfo implements INodeInfo {
 
@@ -8,63 +12,81 @@ public class NodeInfo implements INodeInfo {
     }
 
     private NodeInfo(String id, DownloadUrlResponse downloadResponse, byte[] key) {
-        this.Id = id;
-        this.Attributes = Crypto.DecryptAttributes(downloadResponse.SerializedAttributes.FromBase64(), key);
-        this.Size = downloadResponse.Size;
-        this.Type = NodeType.File;
+        this.id = id;
+        attributes = Crypto.DecryptAttributes(downloadResponse.getSerializedAttributes().FromBase64(), key);
+        size = downloadResponse.getSize();
+        type = NodeType.File;
     }
 
-    [
-    JsonIgnore
-    ]
-    public string Name
-
+    @JsonIgnore
+    @Override
+    public String getName()
     {
-        get {
-            return this.Attributes ?.Name;
+        if(attributes == null){
+            return "";
+        }
+        else{
+            return attributes.getName();
         }
     }
 
-    [
-
-    JsonProperty(
-    "s")]
-    public long Size
-
-    {get; protected set ;
-}
-
-[JsonProperty("t")]
-    public NodeType Type { get; protected set; }
-
-    [JsonProperty("h")]
-    public string Id { get; private set; }
-
-    [JsonIgnore]
-    public Date ModificationDate
-    {
-      get { return this.Attributes?.ModificationDate; }
+    @JsonProperty("s")
+    public long size;
+    
+    @Override
+    public long getSize(){
+        return size;
     }
 
-    [JsonIgnore]
-    public Attributes Attributes { get; protected set; }
+    @JsonProperty("t")
+    private NodeType type;
+    
+    public NodeType getNodeType(){
+        return type;
+    }
 
+    @JsonProperty("h")
+    private String id;
+    
     @Override
-        public bool equals(INodeInfo other)
+    public String getId(){
+        return id;
+    }
+    
+
+    @JsonIgnore
+    @Override
+    public Date getModificationDate(){
+        if(attributes == null){
+            return null;
+        }
+        else{
+            return attributes.getModificationDate();
+        }
+    }
+
+    @JsonIgnore
+    private Attributes attributes;
+    
+    public Attributes getAttributes(){
+        return attributes;
+    }
+    
+
+    public boolean equals(INodeInfo other)
     {
-      return other != null && this.Id == other.Id;
+      return other != null && (id == null ? other.getId() == null : id.equals(other.getId()));
     }
 
     @Override
-        public override int hashCode()
+    public int hashCode()
     {
-      return this.Id.getHashCode();
+      return id.hashCode();
     }
 
     @Override
-        public boolean equals(object obj){
-      return this.equals((INodeInfo)obj);
+    public boolean equals(Object obj){
+        return this.equals((INodeInfo)obj);
     }
 
   }
-}

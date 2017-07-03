@@ -92,10 +92,13 @@ public class Options {
         return reportProgressChunkSize;
     }
 
+    public int getDefaultBufferSize() {
+        return DefaultBufferSize;
+    }
+    
+    
     @Override
     public String toString() {
         return "Options{" + "DefaultApplicationKey=" + DefaultApplicationKey + ", DefaultSynchronizeApiRequests=" + DefaultSynchronizeApiRequests + ", DefaultApiRequestAttempts=" + DefaultApiRequestAttempts + ", DefaultApiRequestDelay=" + DefaultApiRequestDelay + ", DefaultApiRequestDelayExponentialFactor=" + DefaultApiRequestDelayExponentialFactor + ", DefaultBufferSize=" + DefaultBufferSize + ", DefaultChunksPackSize=" + DefaultChunksPackSize + ", DefaultReportProgressChunkSize=" + DefaultReportProgressChunkSize + ", applicationKey=" + applicationKey + ", synchronizeApiRequests=" + synchronizeApiRequests + ", apiRequestAttempts=" + apiRequestAttempts + ", apiRequestDelay=" + apiRequestDelay + ", apiRequestDelayExponentialFactor=" + apiRequestDelayExponentialFactor + ", bufferSize=" + bufferSize + ", chunksPackSize=" + chunksPackSize + ", reportProgressChunkSize=" + reportProgressChunkSize + '}';
     }
-    
-
 }

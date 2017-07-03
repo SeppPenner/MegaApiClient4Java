@@ -24,6 +24,10 @@ public class GetNodesResponse {
     public ArrayList<SharedKey> getSharedKeys() {
         return sharedKeys;
     }
+    
+    public void addSharedKey(SharedKey key){
+        sharedKeys.add(key);
+    }
 
     @OnDeserialized
     public void OnDeserialized(StreamingContext ctx) {

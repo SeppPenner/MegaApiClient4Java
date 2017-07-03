@@ -1,11 +1,14 @@
 
+import java.util.ArrayList;
+
+
 public class Crc32 implements HashAlgorithm {
 
     public final long DefaultPolynomial = 0xedb88320;
     public final long DefaultSeed = 0xffffffff;
     static long[] defaultTable;
 
-    static final ulong[] crc32TableLittleEndian = {
+    static final Long[] crc32TableLittleEndian = {
         0x00000000L, 0x77073096L, 0xee0e612cL, 0x990951baL, 0x076dc419L,
         0x706af48fL, 0xe963a535L, 0x9e6495a3L, 0x0edb8832L, 0x79dcb8a4L,
         0xe0d5e91eL, 0x97d2d988L, 0x09b64c2bL, 0x7eb17cbdL, 0xe7b82d07L,
@@ -59,7 +62,7 @@ public class Crc32 implements HashAlgorithm {
         0x5d681b02L, 0x2a6f2b94L, 0xb40bbe37L, 0xc30c8ea1L, 0x5a05df1bL,
         0x2d02ef8dL};
 
-    static final ulong[] crc32tableBigEndian = {
+    static final Long[] crc32tableBigEndian = {
         0x00000000L, 0x96300777L, 0x2c610eeeL, 0xba510999L, 0x19c46d07L,
         0x8ff46a70L, 0x35a563e9L, 0xa395649eL, 0x3288db0eL, 0xa4b8dc79L,
         0x1ee9d5e0L, 0x88d9d297L, 0x2b4cb609L, 0xbd7cb17eL, 0x072db8e7L,
@@ -114,35 +117,32 @@ public class Crc32 implements HashAlgorithm {
         0x8def022dL};
 
     /* Table of CRC-32's of all single byte values (made by makecrc.c) */
-    static readonly ulong[] crc32Table  = BitConverter.IsLittleEndian ? crc32TableLittleEndian : crc32tableBigEndian;
+    static final Long[] crc32Table  = BitConverter.IsLittleEndian ? crc32TableLittleEndian : crc32tableBigEndian;
 
     final long seed ;
     final long[] table ;
     long hash;
 
-    public Crc32() 
-    
-
-    : this(DefaultPolynomial, DefaultSeed)
-        {
-        }
-
-        public Crc32(long polynomial, long seed) {
-        table = InitializeTable(polynomial);
-        this.seed = hash = seed;
+    public Crc32(){
+            table = initializeTable(DefaultPolynomial);
+            seed = DefaultSeed;
     }
 
-    public void Initialize() {
+        public Crc32(long polynomial, long seed) {
+            table = initializeTable(polynomial);
+            this.seed = hash = seed;
+    }
+
+    public void initialize() {
         hash = seed;
     }
 
-    protected void HashCore(byte[] array, int ibStart, int cbSize) {
-
-        hash = CalculateHash(table, hash, array, ibStart, cbSize);
+    protected void hashCore(byte[] array, int ibStart, int cbSize) {
+        hash = calculateHash(table, hash, array, ibStart, cbSize);
     }
 
-    protected  byte[] HashFinal() {
-        var hashBuffer = UInt32ToBigEndianBytes(~hash);
+    protected  byte[] hashFinal() {
+        byte[] hashBuffer = uInt32ToBigEndianBytes(~hash);
         HashValue = hashBuffer;
         return hashBuffer;
     }
@@ -151,27 +151,27 @@ public class Crc32 implements HashAlgorithm {
         return 32;
     }
 
-    public static long Compute(byte[] buffer) {
-        return Compute(DefaultSeed, buffer);
+    public long compute(byte[] buffer) {
+        return compute(DefaultSeed, buffer);
     }
 
-    public static long Compute(long seed, byte[] buffer) {
-        return Compute(DefaultPolynomial, seed, buffer);
+    public long compute(long seed, byte[] buffer) {
+        return compute(DefaultPolynomial, seed, buffer);
     }
 
-    public static long Compute(long polynomial, long seed, byte[] buffer) {
-        return ~CalculateHash(InitializeTable(polynomial), seed, buffer, 0, buffer.length);
+    public long compute(long polynomial, long seed, byte[] buffer) {
+        return ~calculateHash(initializeTable(polynomial), seed, buffer, 0, buffer.length);
     }
 
-    static long[] InitializeTable(long polynomial) {
+    static long[] initializeTable(long polynomial) {
         if (polynomial == DefaultPolynomial && defaultTable != null) {
             return defaultTable;
         }
 
-        var createTable = new long[256];
-        for (var i = 0; i < 256; i++) {
-            var entry = (long) i;
-            for (var j = 0; j < 8; j++) {
+        long[] createTable = new long[256];
+        for (int i = 0; i < 256; i++) {
+            long entry = (long) i;
+            for (int j = 0; j < 8; j++) {
                 if ((entry & 1) == 1) {
                     entry = (entry >> 1) ^ polynomial;
                 } else {
@@ -188,16 +188,16 @@ public class Crc32 implements HashAlgorithm {
         return createTable;
     }
 
-    static long CalculateHash(long[] table, long seed, IList<byte> buffer, int start, int size) {
-        long hash = seed;
+     public long calculateHash(long[] table, long seed, byte[] buffer, int start, int size) {
+        long currentHash = seed;
         for (int i = start; i < start + size; i++) {
-            hash = (hash >> 8) ^ table[buffer[i] ^ hash & 0xff];
+            currentHash = (currentHash >> 8) ^ table[buffer[i] ^ currentHash & 0xff];
         }
-        return hash;
+        return currentHash;
     }
 
-    static byte[] UInt32ToBigEndianBytes(long uint32) {
-        var result = BitConverter.GetBytes(uint32);
+    static byte[] uInt32ToBigEndianBytes(long uint32) {
+        byte[] result = BitConverter.GetBytes(uint32);
 
         if (BitConverter.IsLittleEndian) {
             Array.Reverse(result);
