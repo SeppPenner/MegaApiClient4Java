@@ -18,7 +18,7 @@ public class ShareData {
         return nodeId;
     }
 
-    public Iterable<ShareDataItem> Items() {
+    public Iterable<ShareDataItem> getItems() {
         return this.items;
     }
 

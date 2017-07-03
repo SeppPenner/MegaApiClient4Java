@@ -1,9 +1,11 @@
 package megaapi.megaapiclient4java.JsonSerialization;
 
+import megaapi.megaapiclient4java.Exceptions.ArgumentException;
+
 public class ShareDataConverter extends JsonConverter {
 
     @Override
-    public void writeJson(JsonWriter writer, object value, JsonSerializer serializer) {
+    public void writeJson(JsonWriter writer, Object value, JsonSerializer serializer) throws ArgumentException {
         ShareData data = (ShareData) value;
         if (data == null) {
             throw new ArgumentException("invalid data to serialize");
@@ -11,11 +13,11 @@ public class ShareDataConverter extends JsonConverter {
         writer.WriteStartArray();
 
         writer.WriteStartArray();
-        writer.WriteValue(data.NodeId);
+        writer.WriteValue(data.getNodeId());
         writer.WriteEndArray();
 
         writer.WriteStartArray();
-        foreach(ShareDataItem item in data.Items
+        for(ShareDataItem item : data.getItems()
         
             ){
             writer.WriteValue(item.getNodeId());
@@ -38,7 +40,7 @@ public class ShareDataConverter extends JsonConverter {
     }
 
     @Override
-    public object readJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) {
+    public Object readJson(JsonReader reader, Type objectType, Object existingValue, JsonSerializer serializer) {
         throw new NotImplementedException();
     }
 
