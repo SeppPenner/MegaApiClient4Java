@@ -34,7 +34,10 @@ public class Crypto {
         return result;
     }
 
-    public static void GetPartsFromDecryptedKey(byte[] decryptedKey, out byte[] iv, out byte[] metaMac, out byte[] fileKey
+    public static void getPartsFromDecryptedKey(byte[] decryptedKey, out byte[] iv, out byte[] metaMac, out byte[] fileKey
+
+    
+        ) byte[] iv, out byte[] metaMac, out byte[] fileKey
 
     
         ){
