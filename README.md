@@ -1,7 +1,7 @@
 MegaApiClient4Java
 ====================================
 
-MegaApiClient4Java is a library for using Mega.Nz with Java.
+MegaApiClient4Java is a library for using https://mega.nz/ with Java.
 The library is not finished (and will probably never be finished).
 For those who are interested, this project can be copied and modified as you like.
 
