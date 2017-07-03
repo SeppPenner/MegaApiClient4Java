@@ -23,34 +23,24 @@ public class ProgressionStream implements Stream {
         return bytesRead;
     }
 
-    public override
-
-    void Write(byte[] buffer, int offset, int count) {
+    public void Write(byte[] buffer, int offset, int count) {
         this.baseStream.Write(buffer, offset, count);
     }
 
-    protected override
-
-    void Dispose(boolean disposing) {
+    protected void Dispose(boolean disposing) {
         base.Dispose(disposing);
         this.progress.Report(100);
     }
 
-    public override
-
-    void Flush() {
+    public void Flush() {
         this.baseStream.Flush();
     }
 
-    public override
-
-    long Seek(long offset, SeekOrigin origin) {
+    public long Seek(long offset, SeekOrigin origin) {
         return this.baseStream.Seek(offset, origin);
     }
 
-    public override
-
-    void SetLength(long value) {
+    public   void SetLength(long value) {
         this.baseStream.SetLength(value);
     }
 
