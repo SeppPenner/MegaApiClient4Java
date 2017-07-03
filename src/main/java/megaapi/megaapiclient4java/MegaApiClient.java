@@ -197,7 +197,7 @@ public class MegaApiClient implements IMegaApiClient{
         throw new ArgumentNullException("authInfos");
       }
 
-      this.ensureLoggedOut();
+        tryEnsureLoggedOut();
       this.authenticatedLogin = true;
 
       // Request Mega Api
@@ -226,7 +226,11 @@ public class MegaApiClient implements IMegaApiClient{
     @Override
     public void login(LogonSessionToken logonSessionToken)
     {
-      this.ensureLoggedOut();
+        try {
+            this.ensureLoggedOut();
+        } catch (NotSupportedException ex) {
+            Logger.getLogger(MegaApiClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
       this.authenticatedLogin = true;
       this.sessionId = logonSessionToken.getSessionId();
       this.masterKey = logonSessionToken.getMasterKey();
@@ -283,7 +287,7 @@ public class MegaApiClient implements IMegaApiClient{
     /// <exception cref="NotSupportedException">Not logged in</exception>
     public void Logout()
     {
-      this.ensureLoggedIn();
+      tryEnsureLoggedIn();
 
       if (this.authenticatedLogin == true)
       {
@@ -303,7 +307,7 @@ public class MegaApiClient implements IMegaApiClient{
     /// <exception cref="ApiException">Mega.co.nz service reports an error</exception>
     public IAccountInformation GetAccountInformation()
     {
-      this.ensureLoggedIn();
+      tryEnsureLoggedIn();
 
       AccountInformationRequest currentRequest = new AccountInformationRequest();
       return this.Request<AccountInformationResponse>(currentRequest);
@@ -317,7 +321,7 @@ public class MegaApiClient implements IMegaApiClient{
     /// <exception cref="ApiException">Mega.co.nz service reports an error</exception>
     public Iterable<INode> GetNodes()
     {
-      this.ensureLoggedIn();
+      tryEnsureLoggedIn();
 
       GetNodesRequest currentRequest = new GetNodesRequest();
       GetNodesResponse response = this.Request<GetNodesResponse>(currentRequest, this.masterKey);
@@ -373,7 +377,7 @@ public class MegaApiClient implements IMegaApiClient{
         throw new ArgumentException("Invalid node type");
       }
 
-      this.ensureLoggedIn();
+      tryEnsureLoggedIn();
 
       if (moveToTrash)
       {
@@ -411,7 +415,7 @@ public class MegaApiClient implements IMegaApiClient{
         throw new ArgumentException("Invalid parent node");
       }
 
-      this.ensureLoggedIn();
+      tryEnsureLoggedIn();
 
       byte[] currentKey = Crypto.CreateAesKey();
       byte[] attributes = Crypto.EncryptAttributes(new Attributes(name), currentKey);
@@ -449,7 +453,7 @@ public class MegaApiClient implements IMegaApiClient{
         throw new ArgumentException("Invalid node");
       }
 
-      this.ensureLoggedIn();
+      tryEnsureLoggedIn();
 
       if (nodesType == NodeType.Directory)
       {
@@ -562,7 +566,7 @@ public class MegaApiClient implements IMegaApiClient{
         throw new ArgumentException("node must implement INodeCrypto");
       }
 
-      this.ensureLoggedIn();
+      tryEnsureLoggedIn();
 
       // Retrieve download URL
       DownloadUrlRequest downloadRequest = new DownloadUrlRequest(node);
@@ -595,7 +599,7 @@ public class MegaApiClient implements IMegaApiClient{
         throw new ArgumentNullException("uri");
       }
 
-      this.ensureLoggedIn();
+      tryEnsureLoggedIn();
 
       String id;
       byte[] iv, metaMac, key;
@@ -630,7 +634,7 @@ public class MegaApiClient implements IMegaApiClient{
         throw new ArgumentNullException("uri");
       }
 
-      this.ensureLoggedIn();
+      tryEnsureLoggedIn();
 
       String id;
       byte[] iv, metaMac, key;
@@ -659,7 +663,7 @@ public class MegaApiClient implements IMegaApiClient{
         throw new ArgumentNullException("uri");
       }
 
-      this.ensureLoggedIn();
+      tryEnsureLoggedIn();
 
       String shareId;
       byte[] iv, metaMac, key;
@@ -700,7 +704,7 @@ public class MegaApiClient implements IMegaApiClient{
         throw new FileNotFoundException(filename);
       }
 
-      this.ensureLoggedIn();
+      tryEnsureLoggedIn();
 
       Date modificationDate = File.GetLastWriteTime(filename);
       using (FileStream fileStream = new FileStream(filename, FileMode.Open, FileAccess.Read))
@@ -742,7 +746,7 @@ public class MegaApiClient implements IMegaApiClient{
         throw new ArgumentException("Invalid parent node");
       }
 
-      this.ensureLoggedIn();
+      tryEnsureLoggedIn();
 
       if (cancellationToken.HasValue)
       {
@@ -889,7 +893,7 @@ public class MegaApiClient implements IMegaApiClient{
         throw new ArgumentException("Invalid destination parent node");
       }
 
-      this.ensureLoggedIn();
+      tryEnsureLoggedIn();
 
       this.Request(new MoveRequest(node, destinationParentNode));
       return this.GetNodes().First(n => n.Equals(node));
@@ -920,7 +924,7 @@ public class MegaApiClient implements IMegaApiClient{
         throw new ArgumentException("node must implement INodeCrypto");
       }
 
-      this.ensureLoggedIn();
+      tryEnsureLoggedIn();
 
       byte[] encryptedAttributes = Crypto.EncryptAttributes(new Attributes(newName, ((Node)node).Attributes), nodeCrypto.getKey());
       
@@ -1080,6 +1084,22 @@ public class MegaApiClient implements IMegaApiClient{
         throw new NotSupportedException("Not logged in");
       }
     }
+    
+    private void tryEnsureLoggedIn(){
+        try {
+            this.ensureLoggedIn();
+        } catch (NotSupportedException ex) {
+            Logger.getLogger(MegaApiClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private void tryEnsureLoggedOut(){
+        try {
+            this.ensureLoggedOut();
+        } catch (NotSupportedException ex) {
+            Logger.getLogger(MegaApiClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     private void ensureLoggedOut() throws NotSupportedException
     {
@@ -1110,7 +1130,7 @@ public class MegaApiClient implements IMegaApiClient{
       }
       else
       {
-        Crypto.GetPartsFromDecryptedKey(decryptedKey, out iv, out metaMac, out key);
+        Crypto.getPartsFromDecryptedKey(decryptedKey, out iv, out metaMac, out key);
       }
     }
 
