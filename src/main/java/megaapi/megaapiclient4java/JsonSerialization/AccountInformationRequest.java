@@ -1,28 +1,30 @@
 package megaapi.megaapiclient4java.JsonSerialization;
 
-public class AccountInformationRequest extends RequestBase{
+public class AccountInformationRequest extends RequestBase {
+
+    public AccountInformationRequest() 
     
-    public AccountInformationRequest(): base("uq"){
+    : base("uq"){
     }
 
     @JsonProperty("strg")
     private int storage;
-    
-    public int getStorage(){
+
+    public int getStorage() {
         return 1;
     }
-    
+
     @JsonProperty("xfer")
     private int transfer;
-    
-    public int getTransfer(){
+
+    public int getTransfer() {
         return 0;
     }
 
     @JsonProperty("pro")
     private int accountType;
-    
-    public int getAccountType(){
+
+    public int getAccountType() {
         return 0;
     }
 }

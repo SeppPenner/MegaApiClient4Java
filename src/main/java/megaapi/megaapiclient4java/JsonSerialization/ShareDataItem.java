@@ -1,9 +1,9 @@
 package megaapi.megaapiclient4java.JsonSerialization;
 
-public class ShareDataItem{
-    
+public class ShareDataItem {
+
     private String nodeId;
-    
+
     private byte[] Data;
 
     private byte[] Key;

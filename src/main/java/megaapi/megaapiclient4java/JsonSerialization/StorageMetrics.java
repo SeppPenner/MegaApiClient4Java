@@ -2,21 +2,22 @@ package megaapi.megaapiclient4java.JsonSerialization;
 
 import megaapi.megaapiclient4java.Interfaces.IStorageMetrics;
 
-public class StorageMetrics implements IStorageMetrics{
-      public StorageMetrics(String nodeId, long[] metrics){
+public class StorageMetrics implements IStorageMetrics {
+
+    public StorageMetrics(String nodeId, long[] metrics) {
         this.nodeId = nodeId;
         this.bytesUsed = metrics[0];
         this.filesCount = metrics[1];
         this.foldersCount = metrics[2];
-      }
+    }
 
-      private final String nodeId;
+    private final String nodeId;
 
-      private final long bytesUsed;
+    private final long bytesUsed;
 
-      private final long filesCount;
+    private final long filesCount;
 
-      private final long foldersCount;
+    private final long foldersCount;
 
     @Override
     public String NodeId() {

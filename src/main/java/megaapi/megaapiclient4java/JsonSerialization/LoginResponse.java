@@ -1,32 +1,32 @@
 package megaapi.megaapiclient4java.JsonSerialization;
 
-public class LoginResponse{
-    
+public class LoginResponse {
+
     @JsonProperty("csid")
     private String sessionId;
-    
-    public String getSessionId(){
+
+    public String getSessionId() {
         return sessionId;
     }
-    
+
     @JsonProperty("tsid")
     private String temporarySessionId;
-    
-    public String getTemporarySessionId(){
+
+    public String getTemporarySessionId() {
         return temporarySessionId;
     }
-    
+
     @JsonProperty("privk")
     private String privateKey;
-    
-    public String getPrivateKey(){
+
+    public String getPrivateKey() {
         return privateKey;
     }
 
     @JsonProperty("k")
     private String masterKey;
-    
-    public String getMasterKey(){
+
+    public String getMasterKey() {
         return masterKey;
     }
 }

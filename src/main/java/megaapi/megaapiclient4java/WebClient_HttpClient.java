@@ -7,9 +7,12 @@
   using System.Threading;
 
   using System.Net.Http;
-  using System.Net.Http.Headers;
+  using 
 
-  public class WebClient : IWebClient
+System.Net.Http.Headers;
+
+  public class WebClient 
+: IWebClient
   {
     private const int DefaultResponseTimeout = Timeout.Infinite;
 

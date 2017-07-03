@@ -1,13 +1,13 @@
 package megaapi.megaapiclient4java.Exceptions;
 
-public class UploadException extends Exception{
+public class UploadException extends Exception {
 
     @Override
-    public String getMessage(){
+    public String getMessage() {
         return "Upload error: " + error;
     }
-    
-    private UploadException(String error){
+
+    private UploadException(String error) {
         this.error = error;
     }
 

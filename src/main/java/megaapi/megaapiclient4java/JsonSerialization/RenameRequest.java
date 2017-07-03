@@ -2,24 +2,31 @@ package megaapi.megaapiclient4java.JsonSerialization;
 
 import megaapi.megaapiclient4java.Interfaces.INode;
 
-public class RenameRequest implements RequestBase{
-    
-    public RenameRequest(INode node, String attributes): base("a"){
+public class RenameRequest implements RequestBase {
+
+    public RenameRequest(INode node, String attributes) 
+        : base("a"){
         this.id = node.getId();
         this.serializedAttributes = attributes;
     }
 
-    [JsonProperty("n")]
+    [
+
+    JsonProperty(
+    "n")]
     private String id;
-    
-    public String getId(){
+
+    public String getId() {
         return id;
     }
-    
-    [JsonProperty("attr")]
+
+    [
+
+    JsonProperty(
+    "attr")]
     private String serializedAttributes;
-    
-    public String getSerializedAttributes(){
+
+    public String getSerializedAttributes() {
         return serializedAttributes;
     }
 }

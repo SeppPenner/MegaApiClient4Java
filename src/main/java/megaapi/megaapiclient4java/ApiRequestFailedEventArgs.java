@@ -1,8 +1,11 @@
-namespace CG.Web.MegaApiClient
+namespace 
+
+CG.Web.MegaApiClient
 {
   using System;
 
-  public class ApiRequestFailedEventArgs : EventArgs
+  public class ApiRequestFailedEventArgs 
+: EventArgs
   {
     public ApiRequestFailedEventArgs(Uri url, int attemptNum, int delayMilliseconds, ApiResultCode apiResult, string responseJson)
       : this(url, attemptNum, delayMilliseconds, apiResult, responseJson, null)

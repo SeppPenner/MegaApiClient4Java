@@ -2,9 +2,12 @@ using System;
 using System.IO;
 using System.Threading;
 
-namespace CG.Web.MegaApiClient
+namespace 
+
+CG.Web.MegaApiClient
 {
-  public class CancellableStream : Stream
+  public class CancellableStream 
+: Stream
   {
     private Stream stream;
     private readonly CancellationToken cancellationToken;

@@ -1,7 +1,7 @@
 package megaapi.megaapiclient4java.Interfaces;
 
-public interface IAccountInformation{
-    
+public interface IAccountInformation {
+
     public long getTotalQuota();
 
     public long getUsedQuota();

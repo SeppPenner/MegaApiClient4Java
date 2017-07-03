@@ -2,24 +2,31 @@ package megaapi.megaapiclient4java.JsonSerialization;
 
 import megaapi.megaapiclient4java.Interfaces.INode;
 
-public class MoveRequest extends RequestBase{
-    
-    public MoveRequest(INode node, INode destinationParentNode): base("m"){
+public class MoveRequest extends RequestBase {
+
+    public MoveRequest(INode node, INode destinationParentNode) 
+        : base("m"){
       this.id = node.getId();
-      this.destinationParentId = destinationParentNode.getId();
+        this.destinationParentId = destinationParentNode.getId();
     }
 
-    [JsonProperty("n")]
+    [
+
+    JsonProperty(
+    "n")]
     private String id;
-    
-    public String getId(){
+
+    public String getId() {
         return id;
     }
-    
-    [JsonProperty("t")]
+
+    [
+
+    JsonProperty(
+    "t")]
     private String destinationParentId;
-    
-    public String getDestinationParentId(){
+
+    public String getDestinationParentId() {
         return destinationParentId;
     }
 }

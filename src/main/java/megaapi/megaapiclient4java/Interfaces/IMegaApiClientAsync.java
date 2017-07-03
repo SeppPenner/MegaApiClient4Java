@@ -7,8 +7,8 @@ import javafx.concurrent.Task;
 import megaapi.megaapiclient4java.JsonSerialization.AuthInfos;
 import megaapi.megaapiclient4java.JsonSerialization.LogonSessionToken;
 
-  public interface IMegaApiClientAsync
-  {
+public interface IMegaApiClientAsync {
+
     Task<LogonSessionToken> LoginAsync(String email, String password);
 
     Task<LogonSessionToken> LoginAsync(AuthInfos authInfos);
@@ -27,7 +27,9 @@ import megaapi.megaapiclient4java.JsonSerialization.LogonSessionToken;
 
     Task<INode> CreateFolderAsync(String name, INode parent);
 
-    Task DeleteAsync(INode node, boolean moveToTrash = true);
+    Task DeleteAsync(INode node, boolean moveToTrash
+
+    = true);
 
     Task<INode> MoveAsync(INode sourceNode, INode destinationParentNode);
 
@@ -35,17 +37,29 @@ import megaapi.megaapiclient4java.JsonSerialization.LogonSessionToken;
 
     Task<URI> GetDownloadLinkAsync(INode node);
 
-    Task<Stream> DownloadAsync(INode node, IProgress<double> progress, CancellationToken? cancellationToken = null);
+    Task<Stream> DownloadAsync(INode node, IProgress<double> progress, CancellationToken
 
-    Task<Stream> DownloadAsync(URI uri, IProgress<double> progress, CancellationToken? cancellationToken = null);
+    ? cancellationToken = null);
 
-    Task DownloadFileAsync(INode node, String outputFile, IProgress<double> progress, CancellationToken? cancellationToken = null);
+    Task<Stream> DownloadAsync(URI uri, IProgress<double> progress, CancellationToken
 
-    Task DownloadFileAsync(URI uri, string outputFile, IProgress<double> progress, CancellationToken? cancellationToken = null);
+    ? cancellationToken = null);
 
-    Task<INode> UploadAsync(Stream stream, string name, INode parent, IProgress<double> progress, Date? modificationDate = null, CancellationToken? cancellationToken = null);
+    Task DownloadFileAsync(INode node, String outputFile, IProgress<double> progress, CancellationToken
 
-    Task<INode> UploadFileAsync(String filename, INode parent, IProgress<double> progress, CancellationToken? cancellationToken = null);
+    ? cancellationToken = null);
+
+    Task DownloadFileAsync(URI uri, string outputFile, IProgress<double> progress, CancellationToken
+
+    ? cancellationToken = null);
+
+    Task<INode> UploadAsync(Stream stream, string name, INode parent, IProgress<double> progress, Date
+
+    ? modificationDate = null, CancellationToken? cancellationToken = null);
+
+    Task<INode> UploadFileAsync(String filename, INode parent, IProgress<double> progress, CancellationToken
+
+    ? cancellationToken = null);
 
     Task<INodeInfo> GetNodeFromLinkAsync(URI uri);
 

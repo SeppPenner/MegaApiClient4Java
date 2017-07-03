@@ -6,7 +6,10 @@
   using System.Threading;
   using System.Threading.Tasks;
 
-  public partial class MegaApiClient : IMegaApiClient
+  public partial 
+
+class MegaApiClient 
+: IMegaApiClient
   {
     #region Public async methods
 

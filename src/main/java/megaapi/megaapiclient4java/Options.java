@@ -1,7 +1,7 @@
 package MegaApiClient4Java;
 
-public class Options{
-    
+public class Options {
+
     public final String DefaultApplicationKey = "axhQiYyQ";
     public final boolean DefaultSynchronizeApiRequests = true;
     public final int DefaultApiRequestAttempts = 60;
@@ -11,7 +11,7 @@ public class Options{
     public final int DefaultChunksPackSize = 1024 * 1024;
     public final long DefaultReportProgressChunkSize = 1024 * 50;
 
-    public Options(){
+    public Options() {
         this.applicationKey = DefaultApplicationKey;
         this.synchronizeApiRequests = DefaultSynchronizeApiRequests;
         this.apiRequestAttempts = DefaultApiRequestAttempts;
@@ -21,55 +21,55 @@ public class Options{
         this.chunksPackSize = DefaultChunksPackSize;
         this.reportProgressChunkSize = DefaultReportProgressChunkSize;
     }
-    
+
     public Options(String applicationKey, boolean synchronizeApiRequests, int apiRequestAttempts,
-        int apiRequestDelay, float apiRequestDelayExponentialFactor, int bufferSize, int chunksPackSize,
-        long reportProgressChunkSize){
-            this.applicationKey = applicationKey;
-            this.synchronizeApiRequests = synchronizeApiRequests;
-            this.apiRequestAttempts = apiRequestAttempts;
-            this.apiRequestDelay = apiRequestDelay;
-            this.apiRequestDelayExponentialFactor = apiRequestDelayExponentialFactor;
-            this.bufferSize = bufferSize;
-            this.chunksPackSize = chunksPackSize;
-            this.reportProgressChunkSize = reportProgressChunkSize;
+            int apiRequestDelay, float apiRequestDelayExponentialFactor, int bufferSize, int chunksPackSize,
+            long reportProgressChunkSize) {
+        this.applicationKey = applicationKey;
+        this.synchronizeApiRequests = synchronizeApiRequests;
+        this.apiRequestAttempts = apiRequestAttempts;
+        this.apiRequestDelay = apiRequestDelay;
+        this.apiRequestDelayExponentialFactor = apiRequestDelayExponentialFactor;
+        this.bufferSize = bufferSize;
+        this.chunksPackSize = chunksPackSize;
+        this.reportProgressChunkSize = reportProgressChunkSize;
     }
 
     private final String applicationKey;
-    
+
     public String getApplicationKey() {
         return applicationKey;
     }
 
     private final boolean synchronizeApiRequests;
-    
+
     public boolean getSynchronizeApiRequests() {
         return synchronizeApiRequests;
     }
-    
+
     private final int apiRequestAttempts;
-    
+
     public int getApiRequestAttempts() {
         return apiRequestAttempts;
     }
-    
+
     private final int apiRequestDelay;
-    
+
     public int getApiRequestDelay() {
         return apiRequestDelay;
     }
 
     private final float apiRequestDelayExponentialFactor;
-    
+
     public float getApiRequestDelayExponentialFactor() {
         return apiRequestDelayExponentialFactor;
     }
-    
+
     // Size of the buffer used when downloading files
     // This value has an impact on the progression.
     // A lower value means more progression reports but a possible higher CPU usage
     private final int bufferSize;
-    
+
     public int getBufferSize() {
         return bufferSize;
     }
@@ -81,13 +81,13 @@ public class Options{
     // Fragments are merged until the total size reaches this value.
     // The special value -1 merges all chunks in a single fragment and a single upload
     private final int chunksPackSize;
-    
+
     public int getChunksPackSize() {
         return chunksPackSize;
     }
-    
+
     private final long reportProgressChunkSize;
-    
+
     public long getReportProgressChunkSize() {
         return reportProgressChunkSize;
     }

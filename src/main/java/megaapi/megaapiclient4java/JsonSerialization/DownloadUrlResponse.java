@@ -1,25 +1,25 @@
 package megaapi.megaapiclient4java.JsonSerialization;
 
-public class DownloadUrlResponse{
-    
+public class DownloadUrlResponse {
+
     @JsonProperty("g")
     private String url;
-    
-    public String getUrl(){
+
+    public String getUrl() {
         return url;
     }
-    
+
     @JsonProperty("s")
     private String size;
-    
-    public String getSize(){
+
+    public String getSize() {
         return size;
     }
-    
+
     @JsonProperty("at")
     private String serializedAttributes;
-    
-    public String getSerializedAttributes(){
+
+    public String getSerializedAttributes() {
         return serializedAttributes;
     }
 }

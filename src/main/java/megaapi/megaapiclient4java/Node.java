@@ -1,23 +1,34 @@
 package MegaApiClient4Java;
 
-
 import MegaApiClient4Java.Interfaces.INode;
 import MegaApiClient4Java.Interfaces.INodeCrypto;
 
- internal class Node
-      return this.equals(obj as INodeInfo);
-    }
+internal 
+
+class Node
+
+return this.equals(obj as INodeInfo);
+    
+
+}
 
   }
 
 public class Node extends NodeInfo implements INode, INodeCrypto {
-    private Node(){
+
+    private Node() {
     }
 
-    [JsonProperty("p")]
-    public string ParentId { get; private set; }
+    [
 
-    [JsonProperty("u")]
+    JsonProperty(
+    "p")]
+    public string ParentId
+
+    {get; private set ;
+}
+
+[JsonProperty("u")]
     public string Owner { get; private set; }
 
     [JsonProperty("su")]

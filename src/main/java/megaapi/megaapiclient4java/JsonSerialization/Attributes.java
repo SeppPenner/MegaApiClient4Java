@@ -1,6 +1,7 @@
 package megaapi.megaapiclient4java.JsonSerialization;
 
-public class Attributes{
+public class Attributes {
+
     private final int CrcArrayLength = 4;
     private final int CrcSize = sizeof(long) * CrcArrayLength;
     private final int FingerprintMaxSize = CrcSize + 1 + sizeof(long);
@@ -8,52 +9,68 @@ public class Attributes{
     private final long CryptoPPCRC32Polynomial = 0xEDB88320;
 
     @JsonConstructor
-    private Attributes()
-    {
+    private Attributes() {
     }
 
-    public Attributes(String name){
+    public Attributes(String name) {
         this.Name = name;
     }
 
-    public Attributes(String name, Attributes originalAttributes){
+    public Attributes(String name, Attributes originalAttributes) {
         this.Name = name;
         this.SerializedFingerprint = originalAttributes.SerializedFingerprint;
     }
 
-    public Attributes(String name, Stream stream, DateTime? modificationDate = null)
+    public Attributes(String name, Stream stream, DateTime 
+        ? modificationDate = null)
     {
       this.Name = name;
 
-      if (modificationDate.HasValue)
-      {
-        byte[] fingerprintBuffer = new byte[FingerprintMaxSize];
+        if (modificationDate.HasValue) {
+            byte[] fingerprintBuffer = new byte[FingerprintMaxSize];
 
-        uint[] crc = this.ComputeCrc(stream);
-        Buffer.BlockCopy(crc, 0, fingerprintBuffer, 0, CrcSize);
+            uint[] crc = this.ComputeCrc(stream);
+            Buffer.BlockCopy(crc, 0, fingerprintBuffer, 0, CrcSize);
 
-        byte[] serializedModificationDate = modificationDate.Value.ToEpoch().SerializeToBytes();
-        Buffer.BlockCopy(serializedModificationDate, 0, fingerprintBuffer, CrcSize, serializedModificationDate.Length);
+            byte[] serializedModificationDate = modificationDate.Value.ToEpoch().SerializeToBytes();
+            Buffer.BlockCopy(serializedModificationDate, 0, fingerprintBuffer, CrcSize, serializedModificationDate.Length);
 
-        Array.Resize(ref fingerprintBuffer, fingerprintBuffer.Length - (sizeof(long) + 1) + serializedModificationDate.Length);
+            Array.Resize(ref fingerprintBuffer, fingerprintBuffer.Length - (sizeof(long) + 1) + serializedModificationDate.Length
+            );
 
         this.SerializedFingerprint = Convert.ToBase64String(fingerprintBuffer);
-      }
+        }
     }
 
-    [JsonProperty("n")]
-    public String Name { get; set; }
+    [
 
-    [JsonProperty("c", DefaultValueHandling = DefaultValueHandling.Ignore)]
-    private String SerializedFingerprint { get; set; }
- 
-    [JsonIgnore]
-    public DateTime? ModificationDate
+    JsonProperty(
+    "n")]
+    public String Name
+
+    {get;set;
+    }
+
+    [
+
+    JsonProperty(
+    "c", DefaultValueHandling = DefaultValueHandling.Ignore)]
+    private String SerializedFingerprint
+
+    {get;set;
+    }
+
+    [
+    JsonIgnore
+    ]
+    public DateTime
+    ? ModificationDate
+
     {
-      get; private set;
-    }
+        get; private set ;
+}
 
-    [OnDeserialized]
+[OnDeserialized]
     public void OnDeserialized(StreamingContext context)
     {
       if (this.SerializedFingerprint != null)
@@ -137,7 +154,3 @@ public class Attributes{
       return crc;
     }
   }
-
-
-
-  

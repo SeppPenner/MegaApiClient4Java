@@ -3,122 +3,153 @@ package MegaApiClient4Java;
 import java.lang.reflect.Array;
 import java.util.Date;
 
-public class Extensions{
+public class Extensions {
+
     private static final Date EpochStart = new Date(1970, 1, 1);
 
-    public static String ToBase64(this byte[] data){
-      StringBuilder sb = new StringBuilder();
-      sb.Append(Convert.ToBase64String(data));
-      sb.Replace("+", "-");
-      sb.Replace('/', '_');
-      sb.Replace("=", String.Empty);
+    public static String ToBase64(
+    this byte[] data
 
-      return sb.ToString();
+    
+        ){
+      StringBuilder sb = new StringBuilder();
+        sb.Append(Convert.ToBase64String(data));
+        sb.Replace("+", "-");
+        sb.Replace('/', '_');
+        sb.Replace("=", String.Empty);
+
+        return sb.ToString();
     }
 
-    public static byte[] FromBase64(this string data)
+    public static byte[] FromBase64( 
+        this string data)
     {
       StringBuilder sb = new StringBuilder();
-      sb.Append(data);
-      sb.Append(string.Empty.PadRight((4 - data.Length % 4) % 4, '='));
-      sb.Replace('-', '+');
-      sb.Replace('_', '/');
-      sb.Replace(",", string.Empty);
+        sb.Append(data);
+        sb.Append(string.Empty.PadRight((4 - data.Length % 4) % 4, '='));
+        sb.Replace('-', '+');
+        sb.Replace('_', '/');
+        sb.Replace(",", string.Empty);
 
-      return Convert.FromBase64String(sb.ToString());
+        return Convert.FromBase64String(sb.ToString());
     }
 
-    public static string ToUTF8String(this byte[] data)
+    public static string ToUTF8String(
+    this byte[] data
+
+    
+        )
     {
       return Encoding.UTF8.GetString(data);
     }
 
-    public static byte[] ToBytes(this string data)
+    public static byte[] ToBytes( 
+        this string data)
     {
       return Encoding.UTF8.GetBytes(data);
     }
 
-    public static T[] CopySubArray<T>(this T[] source, int length, int offset = 0)
+    public static T[] CopySubArray
+    <T
+    >(this T[] source, int length, int offset = 0
+
+    
+        )
     {
       T[] result = new T[length];
-      while (--length >= 0)
-      {
-        if (source.Length > offset + length)
-        {
-          result[length] = source[offset + length];
+        while (--length >= 0) {
+            if (source.Length > offset + length) {
+                result[length] = source[offset + length];
+            }
         }
-      }
 
-      return result;
+        return result;
     }
 
-    public static BigInteger FromMPINumber(this byte[] data)
+    public static BigInteger FromMPINumber(
+    this byte[] data
+
+    
+        )
     {
       // First 2 bytes defines the size of the component
       int dataLength = (data[0] * 256 + data[1] + 7) / 8;
 
-      byte[] result = new byte[dataLength];
-      Array.copy(data, 2, result, 0, result.length);
+        byte[] result = new byte[dataLength];
+        Array.copy(data, 2, result, 0, result.length);
 
-      return new BigInteger(result);
+        return new BigInteger(result);
     }
 
-    public static void CopyTo(this Stream inputStream, Stream outputStream, int bufferSize)
+    public static void CopyTo(
+    this Stream inputStream, Stream outputStream, int bufferSize
+
+    
+        )
     {
       // For .Net 3.5
       // From http://referencesource.microsoft.com/#mscorlib/system/io/stream.cs,98ac7cf3acb04bb1
       byte[] buffer = new byte[bufferSize];
-      int read;
-      while ((read = inputStream.Read(buffer, 0, buffer.Length)) != 0)
-      {
-        outputStream.Write(buffer, 0, read);
-      }
+        int read;
+        while ((read = inputStream.Read(buffer, 0, buffer.Length)) != 0) {
+            outputStream.Write(buffer, 0, read);
+        }
     }
 
-    public static DateTime ToDateTime(this long seconds)
+    public static DateTime ToDateTime(
+    this long seconds
+
+    
+        )
     {
       return EpochStart.AddSeconds(seconds).ToLocalTime();
     }
 
-    public static long ToEpoch(this DateTime datetime)
+    public static long ToEpoch( 
+        this DateTime datetime)
     {
-      return (long)datetime.ToUniversalTime().Subtract(EpochStart).TotalSeconds;
+      return (long) datetime.ToUniversalTime().Subtract(EpochStart).TotalSeconds;
     }
 
-    public static long DeserializeToLong(this byte[] data, int index, int length)
+    public static long DeserializeToLong(
+    this byte[] data, int index, int length
+
+    
+        )
     {
       byte p = data[index];
 
-      long result = 0;
+        long result = 0;
 
-      if ((p > sizeof(UInt64)) || (p >= length))
-      {
-        throw new ArgumentException("Invalid value");
-      }
+        if ((p > sizeof(UInt64)) || (p >= length)) {
+            throw new ArgumentException("Invalid value");
+        }
 
+        while (p > 0) {
+            result = (result << 8) + data[index + p--];
+        }
 
-      while (p > 0)
-      {
-        result = (result << 8) + data[index + p--];
-      }
-
-      return result;
+        return result;
     }
 
-    public static byte[] SerializeToBytes(this long data)
+    public static byte[] SerializeToBytes(
+    this long data
+
+    
+        )
     {
       byte[] result = new byte[sizeof(long) + 1];
 
-      byte p = 0;
-      while (data != 0)
-      {
-        result[++p] = (byte)data;
-        data >>= 8;
-      }
+        byte p = 0;
+        while (data != 0) {
+            result[++p] = (byte) data;
+            data >>= 8;
+        }
 
-      result[0] = p;
-      Array.Resize(ref result, result[0] + 1);
+        result[0] = p;
+        Array.Resize(ref result, result[0] + 1
+        );
 
       return result;
     }
-  }
+}

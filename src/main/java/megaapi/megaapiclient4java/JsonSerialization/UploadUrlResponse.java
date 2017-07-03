@@ -1,11 +1,11 @@
 package megaapi.megaapiclient4java.JsonSerialization;
 
-public class UploadUrlResponse{
-    
+public class UploadUrlResponse {
+
     @JsonProperty("p")
     private String url;
-    
-    public String getUrl(){
+
+    public String getUrl() {
         return url;
     }
 }

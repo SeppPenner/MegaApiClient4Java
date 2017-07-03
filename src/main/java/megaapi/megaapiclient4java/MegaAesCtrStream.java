@@ -1,6 +1,7 @@
 package MegaApiClient4Java;
 
-public class MegaAesCtrStreamCrypter : MegaAesCtrStream
+public class MegaAesCtrStreamCrypter 
+: MegaAesCtrStream
   {
     public MegaAesCtrStreamCrypter(Stream stream)
       : base(stream, stream.Length, Mode.Crypt, Crypto.CreateAesKey(), Crypto.CreateAesKey().CopySubArray(8))
@@ -27,11 +28,14 @@ public class MegaAesCtrStreamCrypter : MegaAesCtrStream
         }
 
         return this.metaMac;
-      }
+      
+
+}
     }
   }
 
-  internal class MegaAesCtrStreamDecrypter : MegaAesCtrStream
+  internal class MegaAesCtrStreamDecrypter 
+: MegaAesCtrStream
   {
     private readonly byte[] expectedMetaMac;
 
@@ -51,11 +55,14 @@ public class MegaAesCtrStreamCrypter : MegaAesCtrStream
       if (!this.expectedMetaMac.SequenceEqual(this.metaMac))
       {
         throw new DownloadException();
-      }
+      
+
+}
     }
   }
 
-  internal abstract class MegaAesCtrStream : Stream
+  internal abstract class MegaAesCtrStream 
+: Stream
   {
     protected readonly byte[] fileKey;
     protected readonly byte[] iv;
