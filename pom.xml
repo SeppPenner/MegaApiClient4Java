@@ -11,10 +11,12 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.openengsb.wrapped.csharp/Newtonsoft.Json -->
         <dependency>
             <groupId>org.openengsb.wrapped.csharp</groupId>
             <artifactId>Newtonsoft.Json</artifactId>
             <version>5.0_2</version>
+            <type>pom</type>
         </dependency>
     </dependencies>
 </project>

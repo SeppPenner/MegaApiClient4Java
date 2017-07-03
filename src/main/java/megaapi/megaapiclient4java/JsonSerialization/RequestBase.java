@@ -2,7 +2,7 @@ package megaapi.megaapiclient4java.JsonSerialization;
 
 public abstract class RequestBase {
 
-    protected RequestBase(String action) {
+    public RequestBase(String action) {
         this.action = action;
         this.queryArguments = new NameValueCollection();
     }

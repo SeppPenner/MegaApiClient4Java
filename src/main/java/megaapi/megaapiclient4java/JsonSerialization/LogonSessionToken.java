@@ -1,6 +1,8 @@
 package megaapi.megaapiclient4java.JsonSerialization;
 
-public class LogonSessionToken implements IEquatible<LogonSessionToken> {
+import java.util.Objects;
+
+public class LogonSessionToken implements Iterable<LogonSessionToken> {
 
     @JsonProperty
     private String sessionId;
