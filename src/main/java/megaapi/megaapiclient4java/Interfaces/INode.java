@@ -4,9 +4,9 @@ import java.util.Date;
 
 public interface INode extends INodeInfo {
 
-    public String ParentId();
+    public String getParentId();
 
-    public Date CreationDate();
+    public Date getCreationDate();
 
-    public String Owner();
+    public String getOwner();
 }
