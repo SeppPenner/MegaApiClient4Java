@@ -1,20 +1,30 @@
-﻿namespace CG.Web.MegaApiClient
-{
-  using System;
-  using System.Collections.Generic;
-  using System.IO;
-  using System.Threading;
-  using System.Threading.Tasks;
+package megaapi.megaapiclient4java;
 
-  public partial 
+import java.net.URI;
+import javafx.concurrent.Task;
+import megaapi.megaapiclient4java.Interfaces.IMegaApiClientAsync;
+import megaapi.megaapiclient4java.Interfaces.INode;
+import megaapi.megaapiclient4java.JsonSerialization.AuthInfos;
+import megaapi.megaapiclient4java.JsonSerialization.LogonSessionToken;
 
-class MegaApiClient 
-: IMegaApiClient
+  public class MegaApiClientAsync implements IMegaApiClientAsync
   {
-    #region Public async methods
-
-    public Task<LogonSessionToken> LoginAsync(string email, string password)
+      private final MegaApiClient client = new MegaApiClient();
+      
+      @Override
+    public Task<LogonSessionToken> loginAsync(String email, String password)
     {
+
+        return Task<Integer> task = new Task<Integer>() {
+            @Override protected Integer call() throws Exception {
+               return client.login(email, password);
+            }
+        };
+        
+        
+        
+
+        
       return Task.Run(() => this.Login(email, password));
     }
 
@@ -28,11 +38,13 @@ class MegaApiClient
       return Task.Run(() => this.Login(logonSessionToken));
     }
 
+    @Override
     public Task LoginAnonymousAsync()
     {
       return Task.Run(() => this.LoginAnonymous());
     }
 
+    @Override
     public Task LogoutAsync()
     {
       return Task.Run(() => this.Logout());
@@ -53,16 +65,25 @@ class MegaApiClient
       return Task.Run(() => this.GetNodes(parent));
     }
 
-    public Task<INode> CreateFolderAsync(string name, INode parent)
+    @Override
+    public Task<INode> CreateFolderAsync(String name, INode parent)
     {
-      return Task.Run(() => this.CreateFolder(name, parent));
+        return Task.Run(() => this.CreateFolder(name, parent));
     }
 
-    public Task DeleteAsync(INode node, bool moveToTrash = true)
+    @Override
+    public Task DeleteAsync(INode node)
     {
-      return Task.Run(() => this.Delete(node, moveToTrash));
+      return Task.Run(() => this.Delete(node, true));
+    }
+    
+    @Override
+    public Task DeleteAsyncNoMoveToTrash(INode node)
+    {
+      return Task.Run(() => this.Delete(node, false));
     }
 
+    @Override
     public Task<INode> MoveAsync(INode sourceNode, INode destinationParentNode)
     {
       return Task.Run(() => this.Move(sourceNode, destinationParentNode));
@@ -149,7 +170,7 @@ class MegaApiClient
       }, cancellationToken.GetValueOrDefault());
     }
 
-    public Task<INodeInfo> GetNodeFromLinkAsync(Uri uri)
+    public Task<INodeInfo> GetNodeFromLinkAsync(URI uri)
     {
       return Task.Run(() => this.GetNodeFromLink(uri));
     }
@@ -158,7 +179,4 @@ class MegaApiClient
     {
       return Task.Run(() => this.GetNodesFromLink(uri));
     }
-
-    #endregion
   }
-}

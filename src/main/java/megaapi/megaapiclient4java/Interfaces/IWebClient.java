@@ -20,4 +20,9 @@ public abstract class IWebClient {
     public abstract String PostRequestRaw(URI url, Stream dataStream);
 
     public abstract Stream GetRequestRaw(URI url);
+
+    @Override
+    public String toString() {
+        return "IWebClient{" + "bufferSize=" + bufferSize + '}';
+    }
 }

@@ -7,7 +7,7 @@ public class LogonSessionToken implements Iterable<LogonSessionToken> {
     @JsonProperty
     private String sessionId;
 
-    public String GetSessionId() {
+    public String getSessionId() {
         return sessionId;
     }
 

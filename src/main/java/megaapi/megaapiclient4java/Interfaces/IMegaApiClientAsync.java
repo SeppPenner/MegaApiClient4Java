@@ -9,59 +9,48 @@ import megaapi.megaapiclient4java.JsonSerialization.LogonSessionToken;
 
 public interface IMegaApiClientAsync {
 
-    Task<LogonSessionToken> LoginAsync(String email, String password);
+    Task<LogonSessionToken> loginAsync(String email, String password);
 
-    Task<LogonSessionToken> LoginAsync(AuthInfos authInfos);
+    Task<LogonSessionToken> loginAsync(AuthInfos authInfos);
 
-    Task LoginAsync(LogonSessionToken logonSessionToken);
+    Task loginAsync(LogonSessionToken logonSessionToken);
 
-    Task LoginAnonymousAsync();
+    Task loginAnonymousAsync();
 
-    Task LogoutAsync();
+    Task logoutAsync();
 
-    Task<IAccountInformation> GetAccountInformationAsync();
+    Task<IAccountInformation> getAccountInformationAsync();
 
-    Task<Iterable<INode>> GetNodesAsync();
+    Task<Iterable<INode>> getNodesAsync();
 
-    Task<Iterable<INode>> GetNodesAsync(INode parent);
+    Task<Iterable<INode>> getNodesAsync(INode parent);
 
-    Task<INode> CreateFolderAsync(String name, INode parent);
+    Task<INode> createFolderAsync(String name, INode parent);
 
-    Task DeleteAsync(INode node, boolean moveToTrash
+    Task deleteAsync(INode node);
+    
+    Task deleteAsyncNoMoveToTrash(INode node);
 
-    = true);
+    Task<INode> moveAsync(INode sourceNode, INode destinationParentNode);
 
-    Task<INode> MoveAsync(INode sourceNode, INode destinationParentNode);
+    Task<INode> renameAsync(INode sourceNode, String newName);
 
-    Task<INode> RenameAsync(INode sourceNode, String newName);
+    Task<URI> getDownloadLinkAsync(INode node);
 
-    Task<URI> GetDownloadLinkAsync(INode node);
+    Task<Stream> downloadAsync(INode node, IProgress<double> progress, CancellationToken cancellationToken);
 
-    Task<Stream> DownloadAsync(INode node, IProgress<double> progress, CancellationToken
+    Task<Stream> downloadAsync(URI uri, IProgress<double> progress, CancellationToken cancellationToken);
 
-    ? cancellationToken = null);
+    Task downloadFileAsync(INode node, String outputFile, IProgress<double> progress, CancellationToken cancellationToken);
 
-    Task<Stream> DownloadAsync(URI uri, IProgress<double> progress, CancellationToken
+    Task downloadFileAsync(URI uri, String outputFile, IProgress<double> progress, CancellationToken cancellationToken);
 
-    ? cancellationToken = null);
+    Task<INode> uploadAsync(Stream stream, String name, INode parent, IProgress<double> progress, 
+            Date modificationDate, CancellationToken cancellationToken);
 
-    Task DownloadFileAsync(INode node, String outputFile, IProgress<double> progress, CancellationToken
+    Task<INode> uploadFileAsync(String filename, INode parent, IProgress<double> progress, CancellationToken cancellationToken);
 
-    ? cancellationToken = null);
+    Task<INodeInfo> getNodeFromLinkAsync(URI uri);
 
-    Task DownloadFileAsync(URI uri, string outputFile, IProgress<double> progress, CancellationToken
-
-    ? cancellationToken = null);
-
-    Task<INode> UploadAsync(Stream stream, string name, INode parent, IProgress<double> progress, Date
-
-    ? modificationDate = null, CancellationToken? cancellationToken = null);
-
-    Task<INode> UploadFileAsync(String filename, INode parent, IProgress<double> progress, CancellationToken
-
-    ? cancellationToken = null);
-
-    Task<INodeInfo> GetNodeFromLinkAsync(URI uri);
-
-    Task<Iterable<INode>> GetNodesFromLinkAsync(URI uri);
+    Task<Iterable<INode>> getNodesFromLinkAsync(URI uri);
 }

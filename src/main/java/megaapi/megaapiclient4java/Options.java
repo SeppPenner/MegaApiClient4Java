@@ -1,4 +1,4 @@
-package MegaApiClient4Java;
+package megaapi.megaapiclient4java;
 
 public class Options {
 
@@ -91,4 +91,11 @@ public class Options {
     public long getReportProgressChunkSize() {
         return reportProgressChunkSize;
     }
+
+    @Override
+    public String toString() {
+        return "Options{" + "DefaultApplicationKey=" + DefaultApplicationKey + ", DefaultSynchronizeApiRequests=" + DefaultSynchronizeApiRequests + ", DefaultApiRequestAttempts=" + DefaultApiRequestAttempts + ", DefaultApiRequestDelay=" + DefaultApiRequestDelay + ", DefaultApiRequestDelayExponentialFactor=" + DefaultApiRequestDelayExponentialFactor + ", DefaultBufferSize=" + DefaultBufferSize + ", DefaultChunksPackSize=" + DefaultChunksPackSize + ", DefaultReportProgressChunkSize=" + DefaultReportProgressChunkSize + ", applicationKey=" + applicationKey + ", synchronizeApiRequests=" + synchronizeApiRequests + ", apiRequestAttempts=" + apiRequestAttempts + ", apiRequestDelay=" + apiRequestDelay + ", apiRequestDelayExponentialFactor=" + apiRequestDelayExponentialFactor + ", bufferSize=" + bufferSize + ", chunksPackSize=" + chunksPackSize + ", reportProgressChunkSize=" + reportProgressChunkSize + '}';
+    }
+    
+
 }

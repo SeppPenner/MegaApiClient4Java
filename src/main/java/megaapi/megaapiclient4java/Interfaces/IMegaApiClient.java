@@ -1,85 +1,72 @@
 package megaapi.megaapiclient4java.Interfaces;
 
 import java.net.URI;
+import java.util.Date;
 import java.util.stream.Stream;
 import megaapi.megaapiclient4java.JsonSerialization.AuthInfos;
 import megaapi.megaapiclient4java.JsonSerialization.LogonSessionToken;
 
 public interface IMegaApiClient {
 
-    LogonSessionToken Login(String email, String password);
+    LogonSessionToken login(String email, String password);
 
-    LogonSessionToken Login(AuthInfos authInfos);
+    LogonSessionToken login(AuthInfos authInfos);
 
-    void Login(LogonSessionToken logonSessionToken);
+    void login(LogonSessionToken logonSessionToken);
 
-    void LoginAnonymous();
+    void loginAnonymous();
 
-    void Logout();
+    void logout();
 
-    IAccountInformation GetAccountInformation();
+    IAccountInformation getAccountInformation();
 
-    Iterable<INode> GetNodes();
+    Iterable<INode> getNodes();
 
-    Iterable<INode> GetNodes(INode parent);
+    Iterable<INode> getNodes(INode parent);
 
-    void Delete(INode node, boolean moveToTrash
+    void delete(INode node);
+    
+    void deleteNoMoveToTrash(INode node);
 
-    = true);
+    INode createFolder(String name, INode parent);
 
-    INode CreateFolder(String name, INode parent);
+    URI getDownloadLink(INode node);
 
-    URI GetDownloadLink(INode node);
+    void downloadFile(INode node, String outputFile);
 
-    void DownloadFile(INode node, String outputFile);
+    void downloadFile(INode node, String outputFile, CancellationToken cancellationToken);
 
-    void DownloadFile(INode node, String outputFile, CancellationToken
+    void downloadFile(URI uri, String outputFile);
 
-    ? cancellationToken = null);
+    void downloadFile(URI uri, String outputFile, CancellationToken cancellationToken);
 
-    void DownloadFile(URI uri, String outputFile);
+    Stream download(INode node);
 
-    void DownloadFile(URI uri, String outputFile, CancellationToken
+    Stream download(INode node, CancellationToken cancellationToken);
 
-    ? cancellationToken = null);
+    Stream download(URI uri);
 
-    Stream Download(INode node);
+    Stream download(URI uri, CancellationToken cancellationToken);
 
-    Stream Download(INode node, CancellationToken
+    INodeInfo getNodeFromLink(URI uri);
 
-    ? cancellationToken = null);
+    Iterable<INode> getNodesFromLink(URI uri);
 
-    Stream Download(URI uri);
+    INode uploadFile(String filename, INode parent);
 
-    Stream Download(URI uri, CancellationToken
+    INode uploadFile(String filename, INode parent, CancellationToken cancellationToken);
 
-    ? cancellationToken = null);
+    INode upload(Stream stream, String name, INode parent, Date lastModifiedDate);
 
-    INodeInfo GetNodeFromLink(URI uri);
+    INode upload(Stream stream, String name, INode parent, Date modificationDate, CancellationToken cancellationToken);
 
-    Iterable<INode> GetNodesFromLink(URI uri);
+    INode move(INode node, INode destinationParentNode);
 
-    INode UploadFile(String filename, INode parent);
-
-    INode UploadFile(String filename, INode parent, CancellationToken
-
-    ? cancellationToken = null);
-
-    INode Upload(Stream stream, String name, INode parent, DateTime
-
-    ? lastModifiedDate = null);
-
-    INode Upload(Stream stream, String name, INode parent, DateTime
-
-    ? modificationDate = null, CancellationToken? cancellationToken = null);
-
-    INode Move(INode node, INode destinationParentNode);
-
-    INode Rename(INode node, String newName);
+    INode rename(INode node, String newName);
 
     event EventHandler
     <ApiRequestFailedEventArgs
     > ApiRequestFailed ;
 
-    boolean IsLoggedIn();
+    boolean isLoggedIn();
 }
