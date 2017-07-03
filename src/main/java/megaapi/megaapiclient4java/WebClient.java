@@ -3,52 +3,50 @@ package megaapi.megaapiclient4java;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.stream.Stream;
+import megaapi.megaapiclient4java.Enumerations.Timeout;
 import megaapi.megaapiclient4java.Interfaces.IWebClient;
 
-public class WebClient extends IWebClient {
+public class WebClient extends IWebClient{
 
-    private final int DefaultResponseTimeout = Timeout.Infinite;
+    private final int DefaultResponseTimeout = Timeout.Infinite.getValue();
     private final int responseTimeout;
     private final String userAgent;
 
     public WebClient()
     {
-        BufferSize = Options.DefaultBufferSize;
-        this.responseTimeout = responseTimeout;
+        super.setBufferSize(new Options().DefaultBufferSize);
         userAgent = generateUserAgent();
+        responseTimeout = DefaultResponseTimeout;
     }
     
-    public WebClient(int responseTimeout 
-        = DefaultResponseTimeout, string userAgent = null)
+    public WebClient(int responseTimeout, String userAgent)
     {
-        BufferSize = Options.DefaultBufferSize;
+        super.setBufferSize(new Options().DefaultBufferSize);
         this.responseTimeout = responseTimeout;
-        this.userAgent = userAgent ?  ? this.GenerateUserAgent();
+        this.userAgent = userAgent;
     }
 
     public int BufferSize;
 
-    public String PostRequestJson(URI url, String jsonData) {
-        using(MemoryStream jsonStream = new MemoryStream(jsonData.getBytes(Charset.forName("UTF-8")))
-        
-            )
-      {
+    @Override
+    public String postRequestJson(URI url, String jsonData) {
+        MemoryStream jsonStream = new MemoryStream(jsonData.getBytes(Charset.forName("UTF-8")));
         return this.PostRequest(url, jsonStream, "application/json");
-        }
     }
 
-    public String PostRequestRaw(URI url, Stream dataStream) {
+    @Override
+    public String postRequestRaw(URI url, Stream dataStream) {
         return this.PostRequest(url, dataStream, "application/octet-stream");
     }
 
-    public Stream GetRequestRaw(URI url) {
+    @Override
+    public Stream getRequestRaw(URI url) {
         HttpWebRequest request = this.CreateRequest(url);
         request.Method = "GET";
-
         return request.GetResponse().GetResponseStream();
     }
 
-    private String PostRequest(URI url, Stream dataStream, String contentType) {
+    private String postRequest(URI url, Stream dataStream, String contentType) {
         HttpWebRequest request = this.CreateRequest(url);
         request.ContentLength = dataStream.Length;
         request.Method = "POST";

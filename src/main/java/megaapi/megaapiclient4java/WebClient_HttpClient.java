@@ -6,7 +6,7 @@ import java.nio.charset.Charset;
 import java.util.stream.Stream;
 import megaapi.megaapiclient4java.Interfaces.IWebClient;
 
-  public class WebClient implements IWebClient
+  public class WebClient_HttpClient implements IWebClient
   {
     private final int DefaultResponseTimeout = Timeout.Infinite;
 
