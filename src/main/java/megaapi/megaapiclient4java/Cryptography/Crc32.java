@@ -1,6 +1,4 @@
-
-import java.util.ArrayList;
-
+package megaapi.megaapiclient4java.Cryptography;
 
 public class Crc32 implements HashAlgorithm {
 
